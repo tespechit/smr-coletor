@@ -4,7 +4,8 @@ export default [
     path: '/',
     component: () => import('layouts/default'),
     children: [
-      { path: '', component: () => import('pages/inicio') }
+      { path: '', component: () => import('pages/inicio') },
+      { path: '/coletas/nova', component: () => import('pages/coletas/nova') }
     ]
   },
 

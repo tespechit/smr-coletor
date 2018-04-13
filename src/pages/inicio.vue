@@ -52,7 +52,7 @@
     <div class="botoes-acoes-coleta">
       <div class="row">
         <div class="col">
-          <q-btn push size="lg" color="primary" class="full-width" label="Nova Coleta" icon="playlist_add" @click="novaColeta"/>
+          <q-btn push size="lg" color="primary" class="full-width" label="Nova Coleta" icon="playlist_add" @click="$router.push('/coletas/nova')"/>
           <q-btn push size="lg" color="tertiary" class="full-width" label="Continuar" icon="replay" @click="continuaColeta"/>
           <q-btn push size="lg" color="positive" class="full-width" label="Enviar Coleta" icon="file_upload" @click="enviaColeta" />
         </div>
@@ -67,7 +67,7 @@
 
 <style>
 .botoes-acoes-coleta {
-  max-width: 60vw;
+  max-width: 70vw;
 }
 
 .botoes-acoes-coleta > .row > .col > * {
@@ -105,10 +105,6 @@ export default {
   },
   methods: {
     alteraLoja(idLoja) {
-      // TODO
-    },
-
-    novaColeta() {
       // TODO
     },
 
