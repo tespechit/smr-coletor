@@ -66,10 +66,6 @@
 </template>
 
 <style>
-body {
-  background: rgba(255, 239, 219, 1);
-}
-
 .botoes-acoes-coleta {
   max-width: 60vw;
 }
