@@ -32,10 +32,10 @@
         <q-list-header>Configurações</q-list-header>
         <div>
           <q-select
-            v-model="lojaAtual"
             float-label="Loja"
             radio
             :options="lojas"
+            :value="lojaAtual"
             @input="alteraLoja"
           />
           <br>
@@ -83,14 +83,19 @@
 export default {
   name: 'Inicio',
   computed: {
+    lojaAtual() {
+      return this.$store.state.idLoja
+    },
     lojaAtualNome() {
       return this.lojas.find(loja => loja.value === this.lojaAtual).label
     }
   },
+  created() {
+    this.$store.dispatch('carregarState')
+  },
   data() {
     return {
-      drawerOpen: this.$q.platform.is.desktop,
-      lojaAtual: '1',
+      drawerOpen: false,
       lojas: [
         {
           label: 'Jaboatão',
@@ -109,7 +114,7 @@ export default {
   },
   methods: {
     alteraLoja(idLoja) {
-      // TODO
+      this.$store.dispatch('alterarLoja', { idLoja })
     },
 
     continuaColeta() {

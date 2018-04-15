@@ -1,14 +1,46 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 
-import example from './module-example'
+import { LocalStorage } from 'quasar'
 
 Vue.use(Vuex)
 
-const store = new Vuex.Store({
-  modules: {
-    example
+const state = {
+  idLoja: null
+}
+
+const getters = {}
+
+const mutations = {
+  carregarState(state, novoState) {
+    state.idLoja = novoState.idLoja
+  },
+
+  setLoja(state, idLoja) {
+    state.idLoja = idLoja
   }
+}
+
+const actions = {
+  carregarState({ commit }) {
+    const idLoja = LocalStorage.get.item('idLoja') || '1'
+    const state = {
+      idLoja
+    }
+    commit('carregarState', state)
+  },
+
+  alterarLoja({ commit, state }, { idLoja }) {
+    LocalStorage.set('idLoja', idLoja)
+    commit('setLoja', idLoja)
+  }
+}
+
+const store = new Vuex.Store({
+  state,
+  getters,
+  mutations,
+  actions
 })
 
 export default store
