@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 
 import { LocalStorage } from 'quasar'
+import api from '../services/api'
 
 Vue.use(Vuex)
 
@@ -33,6 +34,10 @@ const actions = {
   alterarLoja({ commit, state }, { idLoja }) {
     LocalStorage.set('idLoja', idLoja)
     commit('setLoja', idLoja)
+  },
+
+  carregarPesquisas({ commit, state }) {
+    return api.getPesquisas(state.idLoja)
   }
 }
 
