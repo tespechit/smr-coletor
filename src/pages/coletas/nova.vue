@@ -1,5 +1,5 @@
 <template>
-  <q-page class="row q-mb-xl">
+  <q-page class="row">
      <q-layout-header>
       <q-toolbar color="primary">
       <q-btn flat round dense icon="arrow_back" @click="$router.push('/')"/>
@@ -14,12 +14,15 @@
       <span>Carregando...</span>
     </p>
 
-    <q-list no-border separator class="full-width">
-      <q-item sparse tag="label" v-for="pesquisa in pesquisas" :key="pesquisa">
+    <q-list separator class="full-width q-mb-xl" >
+      <q-item sparse tag="label" v-for="pesquisa in pesquisas" :key="pesquisa.id">
         <q-item-side>
-          <q-radio v-model="pesquisaSelecionada" :val="pesquisa" />
+          <q-radio v-model="idPesquisa" :val="pesquisa.id" />
         </q-item-side>
-        <q-item-main :label="pesquisa" />
+        <q-item-main :label="pesquisa.nome" />
+        <q-item-side right v-if="pesquisa.id === idPesquisaSugestao">
+          <q-icon name="star" size="23px" color="amber" />
+        </q-item-side>
       </q-item>
     </q-list>
 
@@ -38,18 +41,30 @@ export default {
   name: 'Criar',
   computed: {
     pesquisaNaoSelecionada() {
-      return this.pesquisaSelecionada === null
+      return this.idPesquisa === null
     }
   },
   data() {
     return {
-      pesquisaSelecionada: null,
-      pesquisas: [
-      ]
+      idPesquisa: null,
+      idPesquisaSugestao: null,
+      pesquisas: []
     }
   },
   created() {
-    // TODO: Carregar pesquisas
+    this.$store
+      .dispatch('carregarPesquisas')
+      .then(({ idPesquisaSugestao, pesquisas }) => {
+        this.idPesquisa = this.idPesquisaSugestao = idPesquisaSugestao
+        this.pesquisas = pesquisas
+      })
+      .catch(() => {
+        this.$q.notify({
+          icon: 'error',
+          message: 'Falha ao obter pesquisas',
+          type: 'negative'
+        })
+      })
   },
   methods: {
     comecarColeta() {
