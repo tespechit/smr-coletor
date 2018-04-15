@@ -63,7 +63,8 @@ module.exports = function (ctx) {
         'QSelect',
         'QPageSticky',
         'QChip',
-        'QRadio'
+        'QRadio',
+        'QSpinnerOval'
       ],
       directives: [
         'Ripple'

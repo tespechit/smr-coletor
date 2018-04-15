@@ -2,8 +2,6 @@
   <q-page class="flex flex-center">
     <q-layout-header>
       <q-toolbar color="primary">
-        <img alt="SMR Logo" style="height: 24px" src="~assets/smr-logo.png">
-
         <q-toolbar-title>
           SMR <div slot="subtitle">Aplicativo de Coleta</div>
         </q-toolbar-title>
@@ -29,9 +27,10 @@
         no-border
         link
         inset-delimiter
+        class="q-pa-lg"
       >
         <q-list-header>Configurações</q-list-header>
-        <div class="q-pa-sm">
+        <div>
           <q-select
             v-model="lojaAtual"
             float-label="Loja"
@@ -43,8 +42,13 @@
           <p :style="{color: 'red'}">Não é possível alterar a loja enquanto a coleta estiver pendente.</p>
         </div>
 
-        <div class="q-pa-sm">
+        <div>
           <q-btn push size="md" color="primary" class="full-width" label="Excluir Coleta" icon="delete" @click="excluiColeta" />
+        </div>
+
+        <div class="absolute-bottom full-width text-center">
+          <img alt="SMR Logo" style="height: 48px" src="~assets/smr-logo.png">
+          <p style="color: rgba(0,0,0,.4); font-size: 12px">Desenvolvido por Gustavo Novaes</p>
         </div>
       </q-list>
     </q-layout-drawer>
@@ -59,8 +63,8 @@
       </div>
     </div>
 
-    <q-page-sticky position="bottom-left" :offset="[18, 18]">
-    <q-chip color="white" textColor="faded" square><strong>Loja: </strong> {{ lojaAtualNome }}</q-chip>
+    <q-page-sticky position="bottom" :offset="[18, 18]">
+      <q-chip><strong>Loja: </strong> {{ lojaAtualNome }}</q-chip>
     </q-page-sticky>
   </q-page>
 </template>

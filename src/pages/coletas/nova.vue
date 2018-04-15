@@ -1,14 +1,18 @@
 <template>
-  <q-page class="row">
+  <q-page class="row q-mb-xl">
      <q-layout-header>
       <q-toolbar color="primary">
+      <q-btn flat round dense icon="arrow_back" @click="$router.push('/')"/>
         <q-toolbar-title>
-          Selecione uma Pesquisa
+          Pesquisas
         </q-toolbar-title>
       </q-toolbar>
     </q-layout-header>
 
-    <span class="fixed-center" v-if="pesquisas.length === 0">Carregando pesquisas...  </span>
+    <p class="fixed-center text-center" v-if="pesquisas.length === 0">
+      <q-spinner-oval color="primary" size="32"></q-spinner-oval><br><br>
+      <span>Carregando...</span>
+    </p>
 
     <q-list no-border separator class="full-width">
       <q-item sparse tag="label" v-for="pesquisa in pesquisas" :key="pesquisa">
@@ -19,12 +23,9 @@
       </q-item>
     </q-list>
 
-    <q-layout-footer color="secondary">
-      <q-toolbar class="justify-between">
-        <q-btn size="md" icon="arrow_back" color="white" textColor="dark" label="Voltar" @click="$router.push('/')"/>
-        <q-btn size="md" icon-right="play_arrow" :disable="pesquisaNaoSelecionada" color="positive" label="Começar" @click="comecarColeta()"/>
-      </q-toolbar>
-    </q-layout-footer>
+    <div class="fixed-bottom q-pa-sm" style="background: rgba(247,247,247,.8)">
+      <q-btn size="lg" icon="play_arrow" class="full-width" :disable="pesquisaNaoSelecionada" color="positive" label="Começar" @click="comecarColeta()"/>
+    </div>
   </q-page>
 </template>
 
@@ -43,7 +44,8 @@ export default {
   data() {
     return {
       pesquisaSelecionada: null,
-      pesquisas: []
+      pesquisas: [
+      ]
     }
   },
   created() {

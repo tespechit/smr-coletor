@@ -1,5 +1,5 @@
 <template>
-  <q-layout view="lHh Lpr lFf">
+  <q-layout view="lHh Lpr lFf" class="non-selectable">
     <q-page-container>
       <router-view />
     </q-page-container>
@@ -18,6 +18,6 @@ export default {
 
 <style>
 body {
-  background: rgba(255, 239, 219, 1);
+  background: #F7F7F7
 }
 </style>
