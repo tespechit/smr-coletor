@@ -5,12 +5,14 @@ export default [
     component: () => import('layouts/default'),
     children: [
       { path: '', component: () => import('pages/inicio') },
-      { path: '/coletas/nova', component: () => import('pages/coletas/nova') }
+      { path: '/pesquisas', component: () => import('pages/pesquisas') },
+      { path: '/concorrentes', component: () => import('pages/concorrentes') },
+      { path: '/coleta', component: () => import('pages/coleta') }
     ]
   },
 
   { // Always leave this as last one
     path: '*',
-    component: () => import('pages/404')
+    component: () => import('pages/outras/404')
   }
 ]

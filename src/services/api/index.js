@@ -1,41 +1,34 @@
 const api = {
   getPesquisas(idLoja) {
-    const idPesquisaSugestao = 3
     const pesquisas = [
-      { id: 1, nome: 'Pesquisa #1' },
-      { id: 2, nome: 'Pesquisa #2' },
-      { id: 3, nome: 'Pesquisa #3' },
-      { id: 4, nome: 'Pesquisa #4' },
-      { id: 5, nome: 'Pesquisa #5' },
-      { id: 6, nome: 'Pesquisa #6' },
-      { id: 7, nome: 'Pesquisa #7' }
+      { id: 1, nome: 'Pesquisa #1', itens: [] },
+      { id: 2, nome: 'Pesquisa #2', itens: [] },
+      { id: 3, nome: 'Pesquisa #3', itens: [] },
+      { id: 4, nome: 'Pesquisa #4', itens: [] },
+      { id: 5, nome: 'Pesquisa #5', itens: [] },
+      { id: 6, nome: 'Pesquisa #6', itens: [] },
+      { id: 7, nome: 'Pesquisa #7', itens: [] }
     ]
 
     return new Promise((resolve, reject) => {
-      setTimeout(() => resolve({ idPesquisaSugestao, pesquisas }), 250)
+      setTimeout(() => resolve(pesquisas), 250)
     })
   },
 
-  getDadosColeta(idLoja, idPesquisa) {
-    const dadosColeta = [
-      {
-        id: 123123,
-        descricao: 'Descrição Item Tipo 100g Sabor',
-        precoVenda: 1.23
-      },
-      {
-        id: 321321,
-        descricao: 'Descrição Item Tipo 200g Sabor',
-        precoVenda: 3.21
-      },
-      {
-        id: 213213,
-        descricao: 'Descrição Item Tipo 300g Sabor',
-        precoVenda: 2.13
-      }
+  getIdPesquisaSugestao(idLoja) {
+    const idPesquisaSugestao = 3
+    return Promise.resolve(idPesquisaSugestao)
+  },
+
+  getConcorrentes(idLoja) {
+    const concorrentes = [
+      { id: 1, nome: 'Bom Preço', ordem: 3 },
+      { id: 2, nome: 'Da Casa', ordem: 2 },
+      { id: 3, nome: 'Boas Compras', ordem: 1 },
+      { id: 4, nome: 'Nordeste', ordem: 4 }
     ]
 
-    return Promise.resolve(dadosColeta)
+    return Promise.resolve(concorrentes)
   },
 
   enviaColeta(idLoja, resultadoColeta) {
