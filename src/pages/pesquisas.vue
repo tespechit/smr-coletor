@@ -1,5 +1,5 @@
 <template>
-  <q-page>
+  <q-page style="padding-bottom: 52px">
     <q-layout-header>
       <q-toolbar color="primary">
         <q-btn flat round dense icon="navigate_before" @click="$router.push('/')"/>
@@ -22,7 +22,7 @@
         </q-item>
       </q-list>
 
-      <div class="fixed-bottom q-pa-sm">
+      <div class="fixed-bottom">
         <q-btn size="lg" icon="navigate_next" class="full-width" :disable="pesquisaNaoSelecionada" color="positive" label="Avançar" @click="avancar()"/>
       </div>
     </div>

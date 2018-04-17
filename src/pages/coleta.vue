@@ -3,20 +3,20 @@
     <q-layout-header>
       <q-toolbar color="primary">
         <q-btn flat round dense icon="navigate_before" @click="voltar"/>
-        <q-toolbar-title>Coleta</q-toolbar-title>
+        <q-toolbar-title class="text-no-wrap">
+          <q-breadcrumbs
+            separator=">"
+            active-color="white"
+            color="white"
+            class="q-body-1"
+          >
+              <q-breadcrumbs-el :label="pesquisaAtual" />
+              <q-breadcrumbs-el :label="concorrenteAtual"/>
+          </q-breadcrumbs>
+        </q-toolbar-title>
         <q-btn flat dense icon="home" label="" @click="sair"/>
       </q-toolbar>
     </q-layout-header>
-
-    <q-breadcrumbs
-      class="justify-center"
-      separator=">"
-      active-color="dark"
-      color="dark"
-    >
-        <q-breadcrumbs-el :label="pesquisaAtual" />
-        <q-breadcrumbs-el :label="concorrenteAtual"/>
-    </q-breadcrumbs>
 
     <div class="row justify-center items-center" style="height: calc(100vh - 130px)">
 
@@ -121,7 +121,7 @@ export default {
     },
 
     sair() {
-      this.sairDaColeta('/concorrentes', 'Deseja voltar para a tela de inicial?')
+      this.sairDaColeta('/', 'Deseja voltar para a tela inicial?')
     },
 
     encerrarColeta() {

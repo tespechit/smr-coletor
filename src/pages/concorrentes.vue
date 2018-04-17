@@ -1,5 +1,5 @@
 <template>
-  <q-page>
+  <q-page style="padding-bottom: 52px">
     <q-layout-header>
       <q-toolbar color="primary">
         <q-btn flat round dense icon="navigate_before" @click="$router.push('/pesquisas')"/>
@@ -21,7 +21,7 @@
         </q-item>
       </q-list>
 
-      <div class="fixed-bottom q-pa-sm">
+      <div class="fixed-bottom">
         <q-btn size="lg" icon="play_arrow" class="full-width" :disable="concorrenteNaoSelecionado" color="positive" label="Começar" @click="comecar()"/>
       </div>
     </div>
