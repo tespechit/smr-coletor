@@ -1,13 +1,20 @@
 const api = {
   getPesquisas(idLoja) {
+    const produtos = [
+      { id: 112233, descricao: 'Descrição item A', precoVenda: 1.23, ordem: 1 },
+      { id: 111222, descricao: 'Descrição item B', precoVenda: 1.22, ordem: 2 },
+      { id: 223311, descricao: 'Descrição item C', precoVenda: 2.31, ordem: 3 },
+      { id: 321321, descricao: 'Descrição item D', precoVenda: 3.21, ordem: 4 }
+    ]
+
     const pesquisas = [
-      { id: 1, nome: 'Pesquisa #1', itens: [] },
-      { id: 2, nome: 'Pesquisa #2', itens: [] },
-      { id: 3, nome: 'Pesquisa #3', itens: [] },
-      { id: 4, nome: 'Pesquisa #4', itens: [] },
-      { id: 5, nome: 'Pesquisa #5', itens: [] },
-      { id: 6, nome: 'Pesquisa #6', itens: [] },
-      { id: 7, nome: 'Pesquisa #7', itens: [] }
+      { id: 1, nome: 'Pesquisa #1', produtos },
+      { id: 2, nome: 'Pesquisa #2', produtos },
+      { id: 3, nome: 'Pesquisa #3', produtos },
+      { id: 4, nome: 'Pesquisa #4', produtos },
+      { id: 5, nome: 'Pesquisa #5', produtos },
+      { id: 6, nome: 'Pesquisa #6', produtos },
+      { id: 7, nome: 'Pesquisa #7', produtos }
     ]
 
     return new Promise((resolve, reject) => {

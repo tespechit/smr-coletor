@@ -1,4 +1,3 @@
-
 export default [
   {
     path: '/',
@@ -11,7 +10,8 @@ export default [
     ]
   },
 
-  { // Always leave this as last one
+  {
+    // Always leave this as last one
     path: '*',
     component: () => import('pages/outras/404')
   }
