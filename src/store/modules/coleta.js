@@ -1,5 +1,3 @@
-// import api from '../services/api'
-
 const findColetaAtual = state => {
   return state.coletas.find(coleta => {
     return coleta.concorrente.id === state.concorrenteAtual.id
