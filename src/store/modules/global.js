@@ -52,6 +52,8 @@ const actions = {
     commit('setIdLoja', idLoja)
   },
   sincronizarDadosLoja({ commit, dispatch }) {
+    commit('limparStorage', null, { root: true })
+
     return Promise.all([
       // new Promise((resolve, reject) => { setTimeout(() => { reject(new Error('Algo de errado não está certo')) }, 2000) }),
       dispatch('getPesquisas'),

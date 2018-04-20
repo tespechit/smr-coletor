@@ -14,6 +14,9 @@ const store = new Vuex.Store({
       if (store) {
         this.replaceState(Object.assign(state, JSON.parse(store)))
       }
+    },
+    limparStorage() {
+      LocalStorage.clear()
     }
   },
   modules: {
