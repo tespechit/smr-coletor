@@ -42,7 +42,7 @@
                :disable="pesquisaNaoSelecionada"
                color="positive"
                label="Avançar"
-               @click="verificarSeExisteOutraPesquisa()" />
+               @click="verificarSeExisteOutraPesquisa" />
       </div>
     </div>
 
@@ -91,7 +91,7 @@ export default {
       const pesquisaEmAndamento = this.$store.state.coleta.pesquisaAtual
 
       if (!pesquisaEmAndamento) {
-        return
+        return this.avancar()
       }
 
       this.$q
@@ -101,12 +101,12 @@ export default {
           message:
             `A pesquisa "${pesquisaEmAndamento.nome}" já está em andamento. Deseja realmente APAGAR e COMEÇAR UMA NOVA?`,
           stackButtons: true,
-          cancel: 'Não',
           ok: {
             push: true,
             color: 'negative',
             label: 'Apagar e Começar uma Nova'
-          }
+          },
+          cancel: 'Não'
         })
         .then(() => {
           this.avancar()
