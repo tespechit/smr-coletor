@@ -25,24 +25,29 @@
     </q-layout-header>
 
     <div class="row justify-center items-center"
-         style="height: calc(100vh - 130px)"
+         style="height: calc(100vh - 150px)"
          v-if="produtoAtual">
-      <big class="text-center">{{ produtoAtual.descricao }}</big>
 
-      <div class="row full-width justify-center">
-        <div style="width: 40vw">
-          <q-input v-model.lazy="precoConcorrente"
-                   type="tel"
-                   align="right"
-                   prefix="R$"
-                   ref="preco"
-                   @click="$refs.preco.select()"
-                   v-mask="'money'"
-                   autofocus/>
-        </div>
+      <div class="q-display-1"  >
+        {{ produtoAtual.descricao }}
       </div>
 
-      <div class="row">
+      <div class="row full-width justify-center">
+        <div class="row full-width justify-center">
+          <div style="width: 50vw">
+            <q-input v-model.lazy="precoConcorrente"
+                     type="tel"
+                     align="right"
+                     prefix="R$"
+                     ref="preco"
+                     @click="$refs.preco.select()"
+                     class="input-preco"
+                     v-mask="'money'"
+                     style="font-size: 2em"
+                     autofocus/>
+          </div>
+        </div>
+
         <q-checkbox class="q-mt-lg"
                     v-model="promocao"
                     label="Promoção" />
@@ -76,7 +81,6 @@
 </template>
 
 <script>
-
 export default {
   name: 'Coleta',
   created() {
@@ -182,3 +186,10 @@ export default {
   }
 }
 </script>
+
+<style>
+input.q-input-target {
+  height: inherit;
+  outline: 0;
+}
+</style>
