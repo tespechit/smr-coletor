@@ -68,9 +68,16 @@
              icon="photo_camera"
              color="negative"
              @click="tirarFoto()" />
-      <q-btn flat
+
+      <q-btn v-if="ultimoItem"
+             push
              size="lg"
-             :disable="ultimoItem"
+             icon="check"
+             color="positive"
+             @click="$router.push('/concorrentes')" />
+      <q-btn v-else
+             flat
+             size="lg"
              icon="skip_next"
              color="primary"
              @click="atualizarPosicaoProduto(1)" />
