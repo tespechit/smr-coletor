@@ -71,7 +71,8 @@ const actions = {
             ...produto,
             precoConcorrente: 0,
             promocao: false,
-            dataHoraColeta: null
+            dataHoraColeta: null,
+            foto: null
           }
         }
       )
