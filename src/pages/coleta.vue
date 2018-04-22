@@ -63,7 +63,7 @@
              :disable="primeiroItem"
              color="primary"
              @click="voltarProduto" />
-      <q-btn v-if="itemPrecisaDeConfirmacaoComFoto"
+      <q-btn v-if="precisaDeFoto"
              rounded
              size="lg"
              icon="photo_camera"
@@ -91,6 +91,11 @@
 <script>
 export default {
   name: 'Coleta',
+  data() {
+    return {
+      precisaDeFoto: false
+    }
+  },
   created() {
     if (!this.$store.getters['coleta/emAndamento']) {
       return this.$router.push('/')
@@ -124,7 +129,6 @@ export default {
           precoConcorrente: value,
           dataHoraColeta: Date.now()
         }
-        console.log(value)
         this.$store.commit('coleta/atualizarProduto', produto)
       }
     },
@@ -150,9 +154,6 @@ export default {
     },
     ultimoItem() {
       return this.coletaAtual.encerrada
-    },
-    itemPrecisaDeConfirmacaoComFoto() {
-      return false
     },
     percentualConcluido() {
       return this.coletaAtual.posicao / this.coletaAtual.totalProdutos * 100
@@ -188,14 +189,56 @@ export default {
       this.atualizarPosicaoProduto(-1)
     },
     avancarProduto() {
+      this.precisaDeFoto = this.precisaTirarFoto()
+      if (this.precisaDeFoto) {
+        return
+      }
+
       this.atualizarPosicaoProduto(1)
     },
     atualizarPosicaoProduto(value) {
       this.$store.commit('coleta/atualizarPosicaoProduto', value)
       this.$refs.preco.focus()
     },
-    tirarProduto() {
-      // TODO
+    precisaTirarFoto() {
+      if (!this.$q.platform.is.cordova) {
+        return false
+      }
+
+      if (this.produtoAtual.foto !== null) {
+        return false
+      }
+
+      const diferencaMaxima = 25
+      if (this.calculaDiferencaPreco() > diferencaMaxima) {
+        return false
+      }
+
+      this.$q.dialog({
+        color: 'negative',
+        title: 'Tire uma Foto',
+        message:
+          'Tire uma foto da etiqueta do produto clicando no botão vermelho.'
+      })
+
+      return true
+    },
+    calculaDiferencaPreco() {
+      const precoConcorrente = Number(this.precoConcorrente.replace(',', '.'))
+      const diferenca =
+        (precoConcorrente - this.produtoAtual.precoVenda) /
+        precoConcorrente *
+        100
+      return diferenca < 0 ? diferenca * -1 : diferenca
+    },
+    tirarFoto() {
+      const foto = 'base64'
+
+      const produto = {
+        ...this.produtoAtual,
+        foto
+      }
+      this.$store.commit('coleta/atualizarProduto', produto)
     }
   }
 }
