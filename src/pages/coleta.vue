@@ -44,7 +44,8 @@
                      class="input-preco"
                      v-mask="'money'"
                      style="font-size: 2em"
-                     autofocus/>
+                     autofocus
+                     @keyup.enter="avancarProduto"/>
           </div>
         </div>
 
@@ -61,7 +62,7 @@
              icon="skip_previous"
              :disable="primeiroItem"
              color="primary"
-             @click="atualizarPosicaoProduto(-1)" />
+             @click="voltarProduto" />
       <q-btn v-if="itemPrecisaDeConfirmacaoComFoto"
              rounded
              size="lg"
@@ -80,7 +81,7 @@
              size="lg"
              icon="skip_next"
              color="primary"
-             @click="atualizarPosicaoProduto(1)" />
+             @click="avancarProduto" />
       <q-progress class="q-mt-sm"
                   :percentage="percentualConcluido" />
     </div>
@@ -182,6 +183,12 @@ export default {
     },
     voltarInicio() {
       this.confirmarSaida('/', 'Deseja voltar para a tela inicial?')
+    },
+    voltarProduto() {
+      this.atualizarPosicaoProduto(-1)
+    },
+    avancarProduto() {
+      this.atualizarPosicaoProduto(1)
     },
     atualizarPosicaoProduto(value) {
       this.$store.commit('coleta/atualizarPosicaoProduto', value)
