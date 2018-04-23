@@ -70,6 +70,9 @@
 <script>
 export default {
   name: 'Pesquisas',
+  mounted() {
+    this.idPesquisa = this.idPesquisaSugestao
+  },
   computed: {
     pesquisas() {
       return this.$store.getters['global/pesquisas']
