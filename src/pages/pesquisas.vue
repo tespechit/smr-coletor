@@ -99,17 +99,15 @@ export default {
 
       this.$q
         .dialog({
-          color: 'warning',
-          title: 'Pesquisa  detectada!',
+          title: 'Cuidado !!!',
           message:
             `A pesquisa "${pesquisaEmAndamento.nome}" já está em andamento. Deseja realmente APAGAR e COMEÇAR UMA NOVA?`,
-          stackButtons: true,
+          cancel: 'Não',
           ok: {
             push: true,
             color: 'negative',
-            label: 'Apagar e Começar uma Nova'
-          },
-          cancel: 'Não'
+            label: 'Sim, Apague!'
+          }
         })
         .then(() => {
           this.avancar()
