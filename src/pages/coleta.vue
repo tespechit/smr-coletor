@@ -28,7 +28,7 @@
          style="height: calc(100vh - 150px)"
          v-if="produtoAtual">
 
-      <div class="q-display-1">
+      <div class="q-display-1 uppercase text-center" style="word-break: break-all">
         {{ produtoAtual.descricao }}
       </div>
 
