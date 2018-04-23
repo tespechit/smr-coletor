@@ -35,6 +35,24 @@
             <q-progress class="q-mt-sm"
                         :percentage="progressoConcorrentes[concorrente.id]" />
           </q-item-main>
+
+          <q-context-menu class="non-selectable">
+            <q-list-header>Opções</q-list-header>
+
+            <q-list :highlight="false"
+                    link>
+              <q-item v-close-overlay
+                      @click.native="avancarConcorrente(concorrente.id)">
+                <q-item-side>
+                  <q-icon size="36px"
+                          name="warning"
+                          color="negative" />
+                </q-item-side>
+                <q-item-main label="Pular Concorrente"
+                             sublabel="Zerar preço dos produtos" />
+              </q-item>
+            </q-list>
+          </q-context-menu>
         </q-item>
       </q-list>
 
@@ -97,6 +115,32 @@ export default {
 
       this.$store.commit('coleta/setConcorrenteAtual', concorrente)
       this.$router.push('/coleta')
+    },
+    avancarConcorrente(idConcorrente) {
+      this.$q
+        .dialog({
+          title: 'Pular Concorrente',
+          message:
+            'Deseja realmente zerar o preço de todos os produtos desse concorrente?',
+          ok: {
+            push: true,
+            color: 'negative',
+            label: 'Sim'
+          },
+          cancel: 'Não'
+        })
+        .then(() => {
+          this.$store
+            .dispatch('coleta/avancarConcorrente', idConcorrente)
+            .then(() => {
+              this.$q.notify({
+                type: 'positive',
+                message: 'Concorrente ignorado com sucesso!',
+                timeout: 1000
+              })
+            })
+        })
+        .catch(() => {})
     }
   }
 }

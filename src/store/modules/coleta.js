@@ -88,6 +88,16 @@ const actions = {
 
     commit('setPesquisaAtual', pesquisa)
     commit('setColetas', coletas)
+  },
+  avancarConcorrente({ state }, idConcorrente) {
+    const coleta = state.coletas.find(coleta => coleta.concorrente.id === idConcorrente)
+    coleta.encerrada = true
+    coleta.posicao = coleta.totalProdutos
+
+    coleta.produtos.forEach(produto => {
+      produto.precoConcorrente = 0.00
+      produto.dataHoraColeta = Date.now()
+    })
   }
 }
 
