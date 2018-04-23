@@ -97,17 +97,34 @@ export default {
         return this.avancar()
       }
 
-      this.$q
-        .dialog({
-          title: 'Cuidado !!!',
-          message:
-            `A pesquisa "${pesquisaEmAndamento.nome}" já está em andamento. Deseja realmente APAGAR e COMEÇAR UMA NOVA?`,
-          cancel: 'Não',
-          ok: {
-            push: true,
-            color: 'negative',
-            label: 'Sim, Apague!'
-          }
+      const dialog1 = {
+        title: 'Cuidado !!!',
+        message: `A pesquisa "${
+          pesquisaEmAndamento.nome
+        }" já está em andamento. Deseja realmente APAGAR e COMEÇAR UMA NOVA?`,
+        cancel: 'Não',
+        ok: {
+          push: true,
+          color: 'negative',
+          label: 'Sim, Apague!'
+        }
+      }
+
+      const dialog2 = {
+        title: 'Tem certeza?!',
+        message:
+          'Ao confirmar você irá apagar a pesquisa em andamento e começar uma nova.',
+        cancel: 'Não',
+        ok: {
+          push: true,
+          color: 'negative',
+          label: 'Sim, eu tenho!'
+        }
+      }
+
+      this.$q.dialog(dialog1)
+        .then(() => {
+          return this.$q.dialog(dialog2)
         })
         .then(() => {
           this.avancar()
