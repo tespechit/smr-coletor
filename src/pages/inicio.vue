@@ -106,15 +106,13 @@ export default {
       easteregg: 1,
       drawerOpen: false,
       sincronizando: false,
-      enviando: false,
-      lojas: [
-        { label: 'Jaboatão', value: '1' },
-        { label: 'Cordeiro', value: '3' },
-        { label: 'Piedade', value: '4' }
-      ]
+      enviando: false
     }
   },
   computed: {
+    lojas() {
+      return this.$store.state.global.lojas
+    },
     idLoja() {
       return this.$store.state.global.idLoja
     },
