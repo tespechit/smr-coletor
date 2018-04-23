@@ -8,14 +8,16 @@
   "private": true,
   "scripts": {
     "lint": "eslint --ext .js,.vue src",
-    "test": "echo \"No test specified\" && exit 0"
+    "test": "jest"
   },
   "dependencies": {
     "awesome-mask": "^1.1.1",
-    "axios": "^0.18.0"
+    "axios": "^0.18.0",
+    "jest-vue-preprocessor": "^1.4.0"
   },
   "devDependencies": {
     "babel-eslint": "^8.2.1",
+    "babel-jest": "^22.4.3",
     "eslint": "^4.18.2",
     "eslint-config-prettier": "^2.9.0",
     "eslint-config-standard": "^11.0.0",
@@ -26,7 +28,10 @@
     "eslint-plugin-promise": "^3.7.0",
     "eslint-plugin-standard": "^3.0.1",
     "eslint-plugin-vue": "^4.5.0",
-    "quasar-cli": "^0.15.14"
+    "jest": "^22.4.3",
+    "quasar-cli": "^0.15.14",
+    "vue-test": "^1.0.0",
+    "vue-test-utils": "^1.0.0-beta.11"
   },
   "engines": {
     "node": ">= 8.9.0",
@@ -36,5 +41,16 @@
     "> 1%",
     "last 2 versions",
     "not ie <= 10"
-  ]
+  ],
+  "jest": {
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "vue"
+    ],
+    "transform": {
+      ".*\\.(vue)$": "<rootDir>/node_modules/jest-vue-preprocessor",
+      "^.+\\.js$": "<rootDir>/node_modules/babel-jest"
+    }
+  }
 }
