@@ -28,7 +28,7 @@
          style="height: calc(100vh - 150px)"
          v-if="produtoAtual">
 
-      <div class="q-display-1"  >
+      <div class="q-display-1">
         {{ produtoAtual.descricao }}
       </div>
 
@@ -64,18 +64,17 @@
              color="primary"
              @click="voltarProduto" />
       <q-btn v-if="precisaDeFoto"
-             rounded
              size="lg"
              icon="photo_camera"
              color="negative"
+             class="animate-pop"
              @click="tirarFoto()" />
-
       <q-btn v-if="ultimoItem"
              push
              size="lg"
              icon="check"
              color="positive"
-             @click="$router.push('/concorrentes')" />
+             @click="avancarProduto" />
       <q-btn v-else
              flat
              size="lg"
@@ -121,12 +120,14 @@ export default {
     },
     precoConcorrente: {
       get() {
-        return this.produtoAtual.precoConcorrente
+        const preco = this.produtoAtual.precoConcorrente
+        return preco.toString().replace('.', ',')
       },
       set(value) {
+        const precoConcorrente = Number(value.replace(',', '.'))
         const produto = {
           ...this.produtoAtual,
-          precoConcorrente: value,
+          precoConcorrente,
           dataHoraColeta: Date.now()
         }
         this.$store.commit('coleta/atualizarProduto', produto)
@@ -189,16 +190,16 @@ export default {
       this.atualizarPosicaoProduto(-1)
     },
     avancarProduto() {
+      if (this.ultimoItem) {
+        return this.$router.push('/concorrentes')
+      }
+
       this.precisaDeFoto = this.precisaTirarFoto()
       if (this.precisaDeFoto) {
         return
       }
 
       this.atualizarPosicaoProduto(1)
-    },
-    atualizarPosicaoProduto(value) {
-      this.$store.commit('coleta/atualizarPosicaoProduto', value)
-      this.$refs.preco.focus()
     },
     precisaTirarFoto() {
       if (!this.$q.platform.is.cordova) {
@@ -210,35 +211,58 @@ export default {
       }
 
       const diferencaMaxima = 25
-      if (this.calculaDiferencaPreco() > diferencaMaxima) {
+      if (this.calculaDiferencaPrecoEmPercentual() < diferencaMaxima) {
         return false
       }
 
-      this.$q.dialog({
-        color: 'negative',
-        title: 'Tire uma Foto',
-        message:
-          'Tire uma foto da etiqueta do produto clicando no botão vermelho.'
+      if (Number(this.precoConcorrente.replace(',', '.')) === 0) {
+        return false
+      }
+
+      this.$q.notify({
+        position: 'top',
+        type: 'warning',
+        icon: 'photo_camera',
+        timeout: 1500,
+        message: 'Tire uma foto da etiqueta do produto.'
       })
 
       return true
     },
-    calculaDiferencaPreco() {
+    calculaDiferencaPrecoEmPercentual() {
       const precoConcorrente = Number(this.precoConcorrente.replace(',', '.'))
-      const diferenca =
-        (precoConcorrente - this.produtoAtual.precoVenda) /
-        precoConcorrente *
-        100
+      const diferenca = (precoConcorrente - this.produtoAtual.precoVenda) / precoConcorrente * 100
       return diferenca < 0 ? diferenca * -1 : diferenca
     },
+    atualizarPosicaoProduto(value) {
+      this.$store.commit('coleta/atualizarPosicaoProduto', value)
+      this.$refs.preco.focus()
+    },
     tirarFoto() {
-      const foto = 'base64'
+      navigator.camera.getPicture(
+        image => {
+          const foto = 'data:image/jpeg;base64,' + image
+          const produto = {
+            ...this.produtoAtual,
+            foto
+          }
 
-      const produto = {
-        ...this.produtoAtual,
-        foto
-      }
-      this.$store.commit('coleta/atualizarProduto', produto)
+          this.$store.commit('coleta/atualizarProduto', produto)
+
+          this.$q.notify({
+            position: 'top',
+            type: 'positive',
+            timeout: 1500,
+            message: 'Foto salva com sucesso!'
+          })
+        },
+        () => {
+          this.$q.notify('Falha ao acessar a camera')
+        },
+        {
+          destinationType: 0 // DATA_URL
+        }
+      )
     }
   }
 }
