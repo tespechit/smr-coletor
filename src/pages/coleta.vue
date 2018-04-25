@@ -28,7 +28,8 @@
          style="height: calc(100vh - 150px)"
          v-if="produtoAtual">
 
-      <div class="q-display-1 uppercase text-center" style="word-break: break-all">
+      <div class="q-display-1 uppercase text-center"
+           style="word-break: break-all">
         {{ produtoAtual.descricao }}
       </div>
 
@@ -45,7 +46,7 @@
                      v-mask="'money'"
                      style="font-size: 2em"
                      autofocus
-                     @keyup.enter="avancarProduto"/>
+                     @keyup.enter="avancarProduto" />
           </div>
         </div>
 
@@ -230,6 +231,9 @@ export default {
       return true
     },
     calculaDiferencaPrecoEmPercentual() {
+      if (this.produtoAtual.precoVenda <= 0) {
+        return 0
+      }
       const precoConcorrente = Number(this.precoConcorrente.replace(',', '.'))
       const diferenca = (precoConcorrente - this.produtoAtual.precoVenda) / precoConcorrente * 100
       return diferenca < 0 ? diferenca * -1 : diferenca
