@@ -28,8 +28,7 @@
          style="height: calc(100vh - 150px)"
          v-if="produtoAtual">
 
-      <div class="q-display-1 uppercase text-center"
-           style="word-break: break-all">
+      <div class="q-display-1 uppercase text-center">
         {{ produtoAtual.descricao }}
       </div>
 
@@ -41,9 +40,9 @@
                      align="right"
                      prefix="R$"
                      ref="preco"
+                     v-mask="'money'"
                      @click="$refs.preco.select()"
                      class="input-preco"
-                     v-mask="'money'"
                      style="font-size: 2em"
                      autofocus
                      @keyup.enter="avancarProduto" />
@@ -89,6 +88,8 @@
 </template>
 
 <script>
+import { debounce } from 'quasar'
+
 export default {
   name: 'Coleta',
   data() {
@@ -122,17 +123,16 @@ export default {
     precoConcorrente: {
       get() {
         const preco = this.produtoAtual.precoConcorrente
-        return preco.toString().replace('.', ',')
+        return isNaN(preco) ? '' : preco.toString().replace('.', ',')
       },
-      set(value) {
+      set: debounce(function(value) {
         const precoConcorrente = Number(value.replace(',', '.'))
         const produto = {
           ...this.produtoAtual,
-          precoConcorrente,
-          dataHoraColeta: Date.now()
+          precoConcorrente
         }
         this.$store.commit('coleta/atualizarProduto', produto)
-      }
+      }, 500)
     },
     promocao: {
       get() {
@@ -235,7 +235,10 @@ export default {
         return 0
       }
       const precoConcorrente = Number(this.precoConcorrente.replace(',', '.'))
-      const diferenca = (precoConcorrente - this.produtoAtual.precoVenda) / precoConcorrente * 100
+      const diferenca =
+        (precoConcorrente - this.produtoAtual.precoVenda) /
+        precoConcorrente *
+        100
       return diferenca < 0 ? diferenca * -1 : diferenca
     },
     atualizarPosicaoProduto(value) {
