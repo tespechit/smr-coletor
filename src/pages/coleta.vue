@@ -42,6 +42,7 @@
                      v-mask="'money'"
                      style="font-size: 2em"
                      autofocus
+                     clearable
                      @keyup.enter="avancarProduto" />
           </div>
         </div>
