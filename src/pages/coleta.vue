@@ -39,10 +39,7 @@
                      type="tel"
                      align="right"
                      prefix="R$"
-                     ref="preco"
                      v-mask="'money'"
-                     @click="$refs.preco.select()"
-                     class="input-preco"
                      style="font-size: 2em"
                      autofocus
                      @keyup.enter="avancarProduto" />
