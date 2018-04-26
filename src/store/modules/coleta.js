@@ -82,7 +82,7 @@ const actions = {
         produto => {
           return {
             ...produto,
-            precoConcorrente: 0,
+            precoConcorrente: '',
             promocao: false,
             dataHoraColeta: null,
             foto: null
