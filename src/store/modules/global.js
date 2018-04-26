@@ -8,7 +8,6 @@ const state = {
     { label: 'L2 - Cordeiro', value: '3' },
     { label: 'L3 - Piedade', value: '4' }
   ],
-  idPesquisaSugestao: null,
   dataUltimaSincronizacao: null,
   pesquisas: [],
   concorrentes: []
@@ -41,9 +40,6 @@ const mutations = {
   setPesquisas(state, pesquisas) {
     state.pesquisas = pesquisas
   },
-  setIdPesquisaSugestao(state, idPesquisaSugestao) {
-    state.idPesquisaSugestao = idPesquisaSugestao
-  },
   setConcorrentes(state, concorrentes) {
     state.concorrentes = concorrentes
   },
@@ -60,15 +56,8 @@ const actions = {
     commit('limparStorage', null, { root: true })
 
     return Promise.all([
-      // new Promise((resolve, reject) => { setTimeout(() => { reject(new Error('Algo de errado não está certo')) }, 2000) }),
-      dispatch('getPesquisas'),
-      dispatch('getIdPesquisaSugestao'),
       dispatch('getConcorrentes'),
-      new Promise((resolve, reject) => {
-        setTimeout(() => {
-          resolve(true)
-        }, 1000)
-      })
+      dispatch('getPesquisas')
     ]).then(() => {
       commit(
         'setDataUltimaAtualizacao',
@@ -79,11 +68,6 @@ const actions = {
   getPesquisas({ commit, state }) {
     return api.getPesquisas(state.idLoja).then(pesquisas => {
       commit('setPesquisas', pesquisas)
-    })
-  },
-  getIdPesquisaSugestao({ commit, state }) {
-    return api.getIdPesquisaSugestao(state.idLoja).then(idPesquisaSugestao => {
-      commit('setIdPesquisaSugestao', idPesquisaSugestao)
     })
   },
   getConcorrentes({ commit, state }) {

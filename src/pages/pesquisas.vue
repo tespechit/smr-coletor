@@ -27,7 +27,7 @@
           <q-item-main class="uppercase"
                        :label="pesquisa.nome" />
           <q-item-side right
-                       v-if="pesquisa.id === idPesquisaSugestao">
+                       v-if="pesquisa.sugestao">
             <q-icon name="star"
                     size="23px"
                     color="amber" />
@@ -71,14 +71,11 @@
 export default {
   name: 'Pesquisas',
   mounted() {
-    this.idPesquisa = this.idPesquisaSugestao
+    this.idPesquisa = this.pesquisas.find(pesquisa => pesquisa.sugestao).id
   },
   computed: {
     pesquisas() {
       return this.$store.getters['global/pesquisas']
-    },
-    idPesquisaSugestao() {
-      return this.$store.state.global.idPesquisaSugestao
     },
     pesquisaNaoSelecionada() {
       return this.idPesquisa === null
