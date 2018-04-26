@@ -70,6 +70,20 @@ const mutations = {
     }
 
     coletaAtual.encerrada = coletaAtual.posicao === coletaAtual.totalProdutos
+  },
+  avancarConcorrente(state, idConcorrente) {
+    const coleta = state.coletas.find(
+      coleta => coleta.concorrente.id === idConcorrente
+    )
+    coleta.encerrada = true
+    coleta.posicao = coleta.totalProdutos
+
+    coleta.produtos.forEach(produto => {
+      produto.promocao = false
+      produto.foto = null
+      produto.precoConcorrente = ''
+      produto.dataHoraColeta = Date.now()
+    })
   }
 }
 
@@ -82,7 +96,7 @@ const actions = {
         produto => {
           return {
             ...produto,
-            precoConcorrente: 0,
+            precoConcorrente: '',
             promocao: false,
             dataHoraColeta: null,
             foto: null
@@ -102,26 +116,16 @@ const actions = {
     commit('setPesquisaAtual', pesquisa)
     commit('setColetas', coletas)
   },
-  avancarConcorrente({ state }, idConcorrente) {
-    const coleta = state.coletas.find(
-      coleta => coleta.concorrente.id === idConcorrente
-    )
-    coleta.encerrada = true
-    coleta.posicao = coleta.totalProdutos
-
-    coleta.produtos.forEach(produto => {
-      produto.promocao = false
-      produto.foto = null
-      produto.precoConcorrente = 0.0
-      produto.dataHoraColeta = Date.now()
-    })
-  },
   enviar({ state }, idLoja) {
     const coletas = state.coletas.map(coleta => {
       const produtos = coleta.produtos.map(produto => {
+        const precoConcorrente = Number(
+          produto.precoConcorrente.replace('.', '').replace(',', '.')
+        )
+
         return {
           id: produto.id,
-          precoConcorrente: produto.precoConcorrente,
+          precoConcorrente,
           foto: produto.foto,
           promocao: produto.promocao,
           dataHoraColeta: produto.dataHoraColeta

@@ -28,7 +28,7 @@
          style="height: calc(100vh - 150px)"
          v-if="produtoAtual">
 
-      <div class="q-display-1 uppercase text-center">
+      <div class="q-headline uppercase text-center">
         {{ produtoAtual.descricao }}
       </div>
 
@@ -41,10 +41,9 @@
                      prefix="R$"
                      ref="preco"
                      v-mask="'money'"
-                     @click="$refs.preco.select()"
-                     class="input-preco"
                      style="font-size: 2em"
                      autofocus
+                     clearable
                      @keyup.enter="avancarProduto" />
           </div>
         </div>
@@ -122,17 +121,15 @@ export default {
     },
     precoConcorrente: {
       get() {
-        const preco = this.produtoAtual.precoConcorrente
-        return isNaN(preco) ? '' : preco.toString().replace('.', ',')
+        return this.produtoAtual.precoConcorrente
       },
       set: debounce(function(value) {
-        const precoConcorrente = Number(value.replace(',', '.'))
         const produto = {
           ...this.produtoAtual,
-          precoConcorrente
+          precoConcorrente: value
         }
         this.$store.commit('coleta/atualizarProduto', produto)
-      }, 500)
+      }, 250)
     },
     promocao: {
       get() {
@@ -203,10 +200,6 @@ export default {
       this.atualizarPosicaoProduto(1)
     },
     precisaTirarFoto() {
-      if (!this.$q.platform.is.cordova) {
-        return false
-      }
-
       if (this.produtoAtual.foto !== null) {
         return false
       }
@@ -246,6 +239,20 @@ export default {
       this.$refs.preco.focus()
     },
     tirarFoto() {
+      if (!this.$q.platform.is.cordova) {
+        const produto = {
+          ...this.produtoAtual,
+          foto: 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'
+        }
+        this.$q.notify({
+          position: 'top',
+          type: 'warning',
+          timeout: 500,
+          message: 'Foto ignorada com sucesso!'
+        })
+        return this.$store.commit('coleta/atualizarProduto', produto)
+      }
+
       navigator.camera.getPicture(
         image => {
           const foto = 'data:image/jpeg;base64,' + image

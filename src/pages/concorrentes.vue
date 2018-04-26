@@ -131,7 +131,7 @@ export default {
         })
         .then(() => {
           this.$store
-            .dispatch('coleta/avancarConcorrente', idConcorrente)
+            .commit('coleta/avancarConcorrente', idConcorrente)
             .then(() => {
               this.$q.notify({
                 type: 'positive',
