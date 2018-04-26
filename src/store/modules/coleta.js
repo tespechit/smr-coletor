@@ -1,3 +1,5 @@
+import api from '../../services/api'
+
 const findColetaAtual = state => {
   return state.coletas.find(coleta => {
     return coleta.concorrente.id === state.concorrenteAtual.id
@@ -50,12 +52,23 @@ const mutations = {
   },
   atualizarProduto(state, novoProduto) {
     const coletaAtual = findColetaAtual(state)
-    const produto = coletaAtual.produtos.find(produto => produto.id === novoProduto.id)
+    const produto = coletaAtual.produtos.find(
+      produto => produto.id === novoProduto.id
+    )
     Object.assign(produto, { ...novoProduto })
   },
-  atualizarPosicaoProduto(state, satanas) {
+  atualizarPosicaoProduto(state, inc) {
     const coletaAtual = findColetaAtual(state)
-    coletaAtual.posicao += satanas
+    coletaAtual.posicao += inc
+
+    if (coletaAtual.posicao > coletaAtual.totalProdutos) {
+      coletaAtual.posicao = coletaAtual.totalProdutos
+    }
+
+    if (coletaAtual.posicao < 1) {
+      coletaAtual.posicao = 1
+    }
+
     coletaAtual.encerrada = coletaAtual.posicao === coletaAtual.totalProdutos
   }
 }
@@ -90,14 +103,37 @@ const actions = {
     commit('setColetas', coletas)
   },
   avancarConcorrente({ state }, idConcorrente) {
-    const coleta = state.coletas.find(coleta => coleta.concorrente.id === idConcorrente)
+    const coleta = state.coletas.find(
+      coleta => coleta.concorrente.id === idConcorrente
+    )
     coleta.encerrada = true
     coleta.posicao = coleta.totalProdutos
 
     coleta.produtos.forEach(produto => {
-      produto.precoConcorrente = 0.00
+      produto.promocao = false
+      produto.foto = null
+      produto.precoConcorrente = 0.0
       produto.dataHoraColeta = Date.now()
     })
+  },
+  enviar({ state }, idLoja) {
+    const coletas = state.coletas.map(coleta => {
+      const produtos = coleta.produtos.map(produto => {
+        return {
+          id: produto.id,
+          precoConcorrente: produto.precoConcorrente,
+          foto: produto.foto,
+          promocao: produto.promocao,
+          dataHoraColeta: produto.dataHoraColeta
+        }
+      })
+
+      return {
+        idConcorrente: coleta.concorrente.id,
+        produtos
+      }
+    })
+    return api.enviarColeta(idLoja, state.pesquisaAtual.id, coletas)
   }
 }
 
