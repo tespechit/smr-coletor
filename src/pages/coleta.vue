@@ -130,7 +130,7 @@ export default {
           precoConcorrente
         }
         this.$store.commit('coleta/atualizarProduto', produto)
-      }, 500)
+      }, 250)
     },
     promocao: {
       get() {
