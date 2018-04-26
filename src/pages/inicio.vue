@@ -153,7 +153,7 @@ export default {
             message: 'Falha ao sincronizar App'
           })
         })
-        .then(() => {
+        .finally(() => {
           this.sincronizando = false
         })
     },
@@ -170,6 +170,21 @@ export default {
     },
     enviar() {
       this.enviando = true
+
+      this.$store
+        .dispatch('coleta/enviar', this.idLoja)
+        .then(({ idColeta }) => {
+          this.$q.notify({
+            type: 'positive',
+            message: `Coleta #${idColeta} enviada com sucesso!`
+          })
+        })
+        .catch(() => {
+          this.$q.notify({
+            type: 'negative',
+            message: 'Falha ao enviar coleta.'
+          })
+        })
       setTimeout(() => {
         this.enviando = false
       }, 1000)
