@@ -119,9 +119,13 @@ const actions = {
   enviar({ state }, idLoja) {
     const coletas = state.coletas.map(coleta => {
       const produtos = coleta.produtos.map(produto => {
+        const precoConcorrente = Number(
+          produto.precoConcorrente.replace('.', '').replace(',', '.')
+        )
+
         return {
           id: produto.id,
-          precoConcorrente: produto.precoConcorrente,
+          precoConcorrente,
           foto: produto.foto,
           promocao: produto.promocao,
           dataHoraColeta: produto.dataHoraColeta
