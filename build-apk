@@ -1,9 +1,11 @@
 #!/bin/sh
+rm app.apk
+
 rm -rf src-cordova/res/screen
 rm -rf src-cordova/platforms/android/app/src/main/res/drawable*
 
 quasar build -m cordova -T android
-cp src-cordova/platforms/android/app/build/outputs/apk/release/app-release-unsigned.apk app.apk
+cp src-cordova/platforms/android/build/outputs/apk/release/android-release-unsigned.apk app.apk
 
 jarsigner -sigalg SHA1withRSA \
   -digestalg SHA1 \
