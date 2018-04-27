@@ -179,15 +179,16 @@ export default {
             message: `Coleta #${idColeta} enviada com sucesso!`
           })
         })
-        .catch(() => {
+        .catch((error) => {
+          console.error(error)
           this.$q.notify({
             type: 'negative',
             message: 'Falha ao enviar coleta.'
           })
         })
-      setTimeout(() => {
-        this.enviando = false
-      }, 1000)
+        .finally(() => {
+          this.enviando = false
+        })
     }
   }
 }
