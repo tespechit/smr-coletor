@@ -76,14 +76,16 @@ const mutations = {
       coleta => coleta.concorrente.id === idConcorrente
     )
     coleta.encerrada = true
-    coleta.posicao = coleta.totalProdutos
+    const posicaoAtual = coleta.posicao
 
-    coleta.produtos.forEach(produto => {
+    coleta.produtos.slice(posicaoAtual).forEach(produto => {
       produto.promocao = false
       produto.foto = null
       produto.precoConcorrente = ''
       produto.dataHoraColeta = Date.now()
     })
+
+    coleta.posicao = coleta.totalProdutos
   }
 }
 

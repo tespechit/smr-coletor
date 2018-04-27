@@ -121,7 +121,8 @@ export default {
         .dialog({
           title: 'Pular Concorrente',
           message:
-            'Deseja realmente zerar o preço de todos os produtos desse concorrente?',
+            'Essa operação vai zerar o preço de todos os produtos a partir do ultimo coletado.' +
+            ' Deseja continuar?',
           ok: {
             push: true,
             color: 'negative',
