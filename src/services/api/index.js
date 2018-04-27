@@ -22,7 +22,6 @@ const api = {
     return server
       .post('/coletor/enviar', { idLoja, idPesquisa, coletas })
       .then(res => res.data)
-      .catch(error => Promise.reject(error.response.data))
   }
 }
 

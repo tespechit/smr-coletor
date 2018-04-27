@@ -179,8 +179,15 @@ export default {
             message: `Coleta #${idColeta} enviada com sucesso!`
           })
         })
-        .catch((error) => {
-          console.error(error)
+        .catch(error => {
+          if (error.response) {
+            console.log(error.response.data)
+          } else if (error.request) {
+            console.log(JSON.stringify(error.request, null, '\t'))
+          } else {
+            console.log(error.message)
+          }
+
           this.$q.notify({
             type: 'negative',
             message: 'Falha ao enviar coleta.'
