@@ -115,6 +115,7 @@ const actions = {
       }
     })
 
+    commit('setConcorrenteAtual', concorrentes[0])
     commit('setPesquisaAtual', pesquisa)
     commit('setColetas', coletas)
   },
