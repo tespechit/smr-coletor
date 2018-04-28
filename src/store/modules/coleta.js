@@ -71,21 +71,29 @@ const mutations = {
 
     coletaAtual.encerrada = coletaAtual.posicao === coletaAtual.totalProdutos
   },
-  avancarConcorrente(state, idConcorrente) {
-    const coleta = state.coletas.find(
-      coleta => coleta.concorrente.id === idConcorrente
-    )
-    coleta.encerrada = true
-    const posicaoAtual = coleta.posicao
+  pularConcorrente(state, idConcorrente) {
+    const coletaAtual = state.coletas.find(coleta => coleta.concorrente.id === idConcorrente)
 
-    coleta.produtos.slice(posicaoAtual).forEach(produto => {
+    const indexProdutoAtual = coletaAtual.produtos.findIndex(produto => produto.dataHoraColeta !== null)
+    const posicaoAtual = indexProdutoAtual < 0
+      ? coletaAtual.totalProdutos
+      : indexProdutoAtual + 1
+
+    coletaAtual.produtos.slice(posicaoAtual).forEach(produto => {
       produto.promocao = false
       produto.foto = null
       produto.precoConcorrente = ''
       produto.dataHoraColeta = Date.now()
     })
 
-    coleta.posicao = coleta.totalProdutos
+    coletaAtual.encerrada = true
+    coletaAtual.posicao = coletaAtual.totalProdutos
+  },
+  resetarConcorrente(state, idConcorrente) {
+    const coleta = state.coletas.find(
+      coleta => coleta.concorrente.id === idConcorrente
+    )
+    coleta.posicao = 1
   }
 }
 

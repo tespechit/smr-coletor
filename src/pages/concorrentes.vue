@@ -47,14 +47,25 @@
             <q-list :highlight="false"
                     link>
               <q-item v-close-overlay
-                      @click.native="avancarConcorrente(concorrente.id)">
+                      @click.native="pularConcorrente(concorrente.id)">
                 <q-item-side>
                   <q-icon size="36px"
                           name="fast_forward"
                           color="faded" />
                 </q-item-side>
                 <q-item-main label="Pular Concorrente"
-                             sublabel="Zerar preços e avançar até último produto." />
+                             sublabel="Avança até último produto." />
+              </q-item>
+
+              <q-item v-close-overlay
+                      @click.native="resetarConcorrente(concorrente.id)">
+                <q-item-side>
+                  <q-icon size="36px"
+                          name="undo"
+                          color="faded" />
+                </q-item-side>
+                <q-item-main label="Resetar Concorrente"
+                             sublabel="Volta ao primeiro produto." />
               </q-item>
             </q-list>
           </q-context-menu>
@@ -125,7 +136,7 @@ export default {
       this.$store.commit('coleta/setConcorrenteAtual', concorrente)
       this.$router.push('/coleta')
     },
-    avancarConcorrente(idConcorrente) {
+    pularConcorrente(idConcorrente) {
       this.$q
         .dialog({
           title: 'Pular Concorrente',
@@ -141,11 +152,38 @@ export default {
         })
         .then(() => {
           this.$store
-            .commit('coleta/avancarConcorrente', idConcorrente)
+            .commit('coleta/pularConcorrente', idConcorrente)
             .then(() => {
               this.$q.notify({
                 type: 'positive',
                 message: 'Concorrente ignorado com sucesso!',
+                timeout: 1000
+              })
+            })
+        })
+        .catch(() => {})
+    },
+    resetarConcorrente(idConcorrente) {
+      this.$q
+        .dialog({
+          title: 'Resetar Concorrente',
+          message:
+            'Essa operação vai voltar a posição do primeiro produto.' +
+            ' Deseja continuar?',
+          ok: {
+            push: true,
+            color: 'negative',
+            label: 'Sim'
+          },
+          cancel: 'Não'
+        })
+        .then(() => {
+          this.$store
+            .commit('coleta/resetarConcorrente', idConcorrente)
+            .then(() => {
+              this.$q.notify({
+                type: 'positive',
+                message: 'Concorrente resetado com sucesso!',
                 timeout: 1000
               })
             })
