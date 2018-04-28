@@ -66,13 +66,13 @@
       <q-btn v-if="precisaDeFoto"
              size="lg"
              icon="photo_camera"
-             color="negative"
+             color="red"
              class="animate-pop"
              @click="tirarFoto()" />
       <q-btn v-if="ultimoItem"
              push
              size="lg"
-             icon="check"
+             icon="done_all"
              color="positive"
              @click="avancarProduto" />
       <q-btn v-else
@@ -138,27 +138,21 @@ export default {
     carregaProduto() {
       this.produto = { ...this.produtoAtual }
     },
-    confirmarSaida(url, message) {
+    voltarConcorrentes() {
+      this.$router.push('/concorrentes')
+    },
+    voltarInicio() {
       this.$q
         .dialog({
           title: 'Confirmação',
-          message,
+          message: 'Deseja voltar para a tela inicial?',
           ok: 'Sim',
           cancel: 'Não'
         })
         .then(() => {
-          this.$router.push(url)
+          this.$router.push('/')
         })
         .catch(() => {})
-    },
-    voltarConcorrentes() {
-      this.confirmarSaida(
-        '/concorrentes',
-        'Deseja voltar para a tela de concorrentes?'
-      )
-    },
-    voltarInicio() {
-      this.confirmarSaida('/', 'Deseja voltar para a tela inicial?')
     },
     voltarProduto() {
       this.atualizarPosicaoProduto(-1)

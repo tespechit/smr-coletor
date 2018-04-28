@@ -69,7 +69,8 @@ module.exports = function (ctx) {
         'QProgress',
         'QBreadcrumbs',
         'QBreadcrumbsEl',
-        'QContextMenu'
+        'QContextMenu',
+        'QPageSticky'
       ],
       directives: [
         'Ripple',

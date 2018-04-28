@@ -1,5 +1,5 @@
 <template>
-  <q-page style="padding-bottom: 52px">
+  <q-page>
     <q-layout-header>
       <q-toolbar color="primary">
         <q-btn flat
@@ -20,7 +20,7 @@
       </q-toolbar>
     </q-layout-header>
 
-    <div v-if="concorrentes.length">
+    <div v-if="concorrentes.length" class="q-mb-xl">
       <q-list separator>
         <q-item highlight
                 tag="label"
@@ -46,45 +46,35 @@
             <q-list :highlight="false"
                     link>
               <q-item v-close-overlay
-                      @click.native="pularConcorrente(concorrente.id)">
-                <q-item-side>
-                  <q-icon size="36px"
-                          name="fast_forward"
-                          color="faded" />
-                </q-item-side>
-                <q-item-main label="Pular Concorrente"
-                             sublabel="Avança até último produto." />
+                      @click.native="resetarConcorrente(concorrente.id)">
+                <q-item-side icon="undo"/>
+                <q-item-main label="Resetar Concorrente"
+                             sublabel="Volta ao primeiro produto." />
               </q-item>
 
               <q-item v-close-overlay
-                      @click.native="resetarConcorrente(concorrente.id)">
-                <q-item-side>
-                  <q-icon size="36px"
-                          name="undo"
-                          color="faded" />
-                </q-item-side>
-                <q-item-main label="Resetar Concorrente"
-                             sublabel="Volta ao primeiro produto." />
+                      @click.native="pularConcorrente(concorrente.id)">
+                <q-item-side icon="fast_forward"/>
+                <q-item-main label="Pular Concorrente"
+                             sublabel="Avança até último produto." />
               </q-item>
             </q-list>
           </q-context-menu>
         </q-item>
       </q-list>
 
-      <div class="fixed-bottom">
-        <q-btn push
-               size="lg"
-               icon="play_arrow"
-               class="full-width"
-               :disable="concorrenteNaoSelecionado"
-               color="positive"
-               label="Iniciar Coleta"
-               @click="iniciarColeta" />
-      </div>
+      <q-page-sticky position="bottom-right" :offset="[18, 18]">
+        <q-btn round
+          size="lg"
+          icon="play_arrow"
+          :disable="concorrenteNaoSelecionado"
+          color="positive"
+          label="xablau!"
+          @click="iniciarColeta" />
+      </q-page-sticky>
     </div>
-
-    <div class="fixed-center full-width text-center"
-         v-else>
+    <div v-else
+         class="fixed-center full-width text-center">
       <p>
         <q-icon name="warning"
                 color="warning"

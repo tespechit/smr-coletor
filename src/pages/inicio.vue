@@ -64,16 +64,18 @@
       </div>
     </q-layout-drawer>
 
-    <div class="absolute-center"
+    <div class="absolute-center text-center"
          style="width: 70vw">
-      <q-btn push
-             size="lg"
+         <p class="q-body-1">Coleta</p>
+      <q-btn size="lg"
+             rounded
              color="primary"
              class="full-width q-mb-lg"
-             label="Nova Coleta"
-             icon="playlist_add"
+             label="Começar"
+             icon="add"
              @click="$router.push('/pesquisas')" />
       <q-btn push
+             rounded
              size="lg"
              class="full-width q-mb-lg"
              label="Continuar"
@@ -81,11 +83,12 @@
              icon="forward"
              @click="continuar" />
       <q-btn push
+             rounded
              size="lg"
              color="positive"
              class="full-width q-mb-lg"
              :disable="!coletaEncerrada"
-             label="Enviar Coleta"
+             label="Enviar"
              icon="file_upload"
              :loading="enviando"
              @click="enviar" />

@@ -1,5 +1,5 @@
 <template>
-  <q-page style="padding-bottom: 52px">
+  <q-page >
     <q-layout-header>
       <q-toolbar color="primary">
         <q-btn flat
@@ -13,7 +13,7 @@
       </q-toolbar>
     </q-layout-header>
 
-    <div v-if="pesquisas.length">
+    <div v-if="pesquisas.length" class="q-mb-xl">
       <q-list separator>
         <q-item highlight
                 tag="label"
@@ -26,28 +26,26 @@
           <q-item-main class="uppercase"
                        :label="pesquisa.nome" />
           <q-item-side right
-                       v-if="pesquisa.sugestao">
-            <q-icon name="star"
-                    size="23px"
-                    color="amber" />
+                       v-if="pesquisa.sugestao"
+                       icon="star"
+                       color="amber">
           </q-item-side>
         </q-item>
       </q-list>
 
-      <div class="fixed-bottom">
-        <q-btn size="lg"
-               push
-               icon="navigate_next"
-               class="full-width"
-               :disable="pesquisaNaoSelecionada"
-               color="positive"
-               label="Avançar"
-               @click="verificarSeExisteOutraPesquisa" />
-      </div>
+      <q-page-sticky position="bottom-right" :offset="[18, 18]">
+        <q-btn
+          round
+          size="lg"
+          icon="forward"
+          :disable="pesquisaNaoSelecionada"
+          color="positive"
+          label=""
+          @click="verificarSeExisteOutraPesquisa" />
+      </q-page-sticky>
     </div>
-
-    <div class="fixed-center full-width text-center"
-         v-else>
+    <div v-else
+         class="fixed-center full-width text-center">
       <p>
         <q-icon name="warning"
                 color="warning"
