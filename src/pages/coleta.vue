@@ -54,13 +54,14 @@
       </div>
     </div>
 
-    <div class="fixed-bottom flex justify-between q-pa-sm"
-         style="background: rgba(247,247,247,.8)">
+    <div class="fixed-bottom flex justify-between q-pa-sm">
+      <q-progress class="q-mb-xs"
+              :percentage="percentualConcluido" />
       <q-btn flat
              size="lg"
              icon="skip_previous"
              :disable="primeiroItem"
-             color="primary"
+             color="faded"
              @click="voltarProduto" />
       <q-btn v-if="precisaDeFoto"
              size="lg"
@@ -80,8 +81,6 @@
              icon="skip_next"
              color="primary"
              @click="avancarProduto" />
-      <q-progress class="q-mt-sm"
-                  :percentage="percentualConcluido" />
     </div>
   </q-page>
 </template>

@@ -7,6 +7,7 @@
                dense
                icon="navigate_before"
                @click="$router.push('/pesquisas')" />
+
         <q-toolbar-title>
           Concorrentes
         </q-toolbar-title>
@@ -21,14 +22,13 @@
 
     <div v-if="concorrentes.length">
       <q-list separator>
-        <q-item sparse
-                highlight
+        <q-item highlight
                 tag="label"
                 v-for="concorrente in concorrentes"
                 :key="concorrente.id">
           <q-item-side>
             <q-radio v-model="idConcorrente"
-                     :val="concorrente.id" />
+                     :val="concorrente.id"/>
           </q-item-side>
           <q-item-main class="uppercase"
                        :label="concorrente.nome">
@@ -36,8 +36,13 @@
                         :percentage="progressoConcorrentes[concorrente.id]" />
           </q-item-main>
 
+          <q-item-side>
+            <q-icon name="done_all" color="positive" size="30px" v-if="progressoConcorrentes[concorrente.id] >= 100"/>
+            <q-icon name="timelapse" color="light" size="30px" v-else/>
+          </q-item-side>
+
           <q-context-menu class="non-selectable">
-            <q-list-header>Opções</q-list-header>
+            <q-list-header>Ações</q-list-header>
 
             <q-list :highlight="false"
                     link>
@@ -45,11 +50,11 @@
                       @click.native="avancarConcorrente(concorrente.id)">
                 <q-item-side>
                   <q-icon size="36px"
-                          name="warning"
-                          color="negative" />
+                          name="fast_forward"
+                          color="faded" />
                 </q-item-side>
                 <q-item-main label="Pular Concorrente"
-                             sublabel="Zerar preço dos produtos" />
+                             sublabel="Zerar preços e avançar até último produto." />
               </q-item>
             </q-list>
           </q-context-menu>
@@ -57,13 +62,14 @@
       </q-list>
 
       <div class="fixed-bottom">
-        <q-btn size="lg"
+        <q-btn push
+               size="lg"
                icon="play_arrow"
                class="full-width"
                :disable="concorrenteNaoSelecionado"
                color="positive"
-               label="Começar"
-               @click="comecar" />
+               label="Iniciar Coleta"
+               @click="iniciarColeta" />
       </div>
     </div>
 
@@ -105,10 +111,13 @@ export default {
     },
     progressoConcorrentes() {
       return this.$store.getters['coleta/progressoConcorrentes']
+    },
+    concorrenteConcluido() {
+      return this.progressoConcorrentes === 100
     }
   },
   methods: {
-    comecar() {
+    iniciarColeta() {
       const concorrente = this.concorrentes.find(
         concorrente => concorrente.id === this.idConcorrente
       )
@@ -121,7 +130,7 @@ export default {
         .dialog({
           title: 'Pular Concorrente',
           message:
-            'Essa operação vai zerar o preço de todos os produtos a partir do ultimo coletado.' +
+            'Essa operação vai zerar o preço de todos os produtos a partir do último coletado.' +
             ' Deseja continuar?',
           ok: {
             push: true,

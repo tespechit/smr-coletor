@@ -15,8 +15,7 @@
 
     <div v-if="pesquisas.length">
       <q-list separator>
-        <q-item sparse
-                highlight
+        <q-item highlight
                 tag="label"
                 v-for="pesquisa in pesquisas"
                 :key="pesquisa.id">
@@ -37,6 +36,7 @@
 
       <div class="fixed-bottom">
         <q-btn size="lg"
+               push
                icon="navigate_next"
                class="full-width"
                :disable="pesquisaNaoSelecionada"
@@ -95,10 +95,9 @@ export default {
       }
 
       const dialog1 = {
-        title: 'Cuidado !!!',
-        message: `A pesquisa "${
-          pesquisaEmAndamento.nome
-        }" já está em andamento. Deseja realmente APAGAR e COMEÇAR UMA NOVA?`,
+        title: 'Atenção!',
+        message:
+          'Já existe uma pesquisa em andamento. Deseja realmente apaga-la para começar uma nova?',
         cancel: 'Não',
         ok: {
           push: true,
@@ -119,7 +118,8 @@ export default {
         }
       }
 
-      this.$q.dialog(dialog1)
+      this.$q
+        .dialog(dialog1)
         .then(() => {
           return this.$q.dialog(dialog2)
         })
