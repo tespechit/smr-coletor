@@ -30,16 +30,15 @@
             <q-radio v-model="idConcorrente"
                      :val="concorrente.id"/>
           </q-item-side>
+
           <q-item-main class="uppercase"
                        :label="concorrente.nome">
             <q-progress class="q-mt-sm"
                         :percentage="progressoConcorrentes[concorrente.id]" />
           </q-item-main>
 
-          <q-item-side>
-            <q-icon name="done_all" color="positive" size="30px" v-if="progressoConcorrentes[concorrente.id] >= 100"/>
-            <q-icon name="timelapse" color="light" size="30px" v-else/>
-          </q-item-side>
+          <q-item-side right icon="done_all" color="positive" v-if="progressoConcorrentes[concorrente.id] >= 100"/>
+          <q-item-side right icon="timelapse" v-else/>
 
           <q-context-menu class="non-selectable">
             <q-list-header>Ações</q-list-header>
