@@ -72,12 +72,16 @@ const mutations = {
     coletaAtual.encerrada = coletaAtual.posicao === coletaAtual.totalProdutos
   },
   pularConcorrente(state, idConcorrente) {
-    const coletaAtual = state.coletas.find(coleta => coleta.concorrente.id === idConcorrente)
+    const coletaAtual = state.coletas.find(
+      coleta => coleta.concorrente.id === idConcorrente
+    )
 
-    const indexProdutoAtual = coletaAtual.produtos.findIndex(produto => produto.dataHoraColeta !== null)
-    const posicaoAtual = indexProdutoAtual < 0
-      ? coletaAtual.totalProdutos
-      : indexProdutoAtual + 1
+    const indexProdutoAtual = coletaAtual.produtos.findIndex(
+      produto => produto.dataHoraColeta !== null
+    )
+
+    const posicaoAtual =
+      indexProdutoAtual < 0 ? coletaAtual.totalProdutos : indexProdutoAtual + 1
 
     coletaAtual.produtos.slice(posicaoAtual).forEach(produto => {
       produto.promocao = false

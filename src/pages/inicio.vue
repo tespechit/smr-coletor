@@ -66,7 +66,7 @@
 
     <div class="absolute-center text-center"
          style="width: 70vw">
-         <p class="q-caption">Coleta</p>
+      <p class="q-caption">Coleta</p>
       <q-btn size="lg"
              rounded
              color="primary"

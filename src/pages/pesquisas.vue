@@ -1,5 +1,5 @@
 <template>
-  <q-page >
+  <q-page>
     <q-layout-header>
       <q-toolbar color="primary">
         <q-btn flat
@@ -13,7 +13,8 @@
       </q-toolbar>
     </q-layout-header>
 
-    <div v-if="pesquisas.length" class="q-mb-xl">
+    <div v-if="pesquisas.length"
+         class="q-mb-xl">
       <q-list separator>
         <q-item highlight
                 tag="label"
@@ -33,15 +34,15 @@
         </q-item>
       </q-list>
 
-      <q-page-sticky position="bottom-right" :offset="[18, 18]">
-        <q-btn
-          round
-          size="lg"
-          icon="forward"
-          :disable="pesquisaNaoSelecionada"
-          color="positive"
-          label=""
-          @click="verificarSeExisteOutraPesquisa" />
+      <q-page-sticky position="bottom-right"
+                     :offset="[18, 18]">
+        <q-btn round
+               size="lg"
+               icon="forward"
+               :disable="pesquisaNaoSelecionada"
+               color="positive"
+               label=""
+               @click="verificarSeExisteOutraPesquisa" />
       </q-page-sticky>
     </div>
     <div v-else
