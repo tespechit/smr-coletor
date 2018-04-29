@@ -66,7 +66,7 @@
 
     <div class="absolute-center text-center"
          style="width: 70vw">
-         <p class="q-body-1">Coleta</p>
+         <p class="q-caption">Coleta</p>
       <q-btn size="lg"
              rounded
              color="primary"
@@ -95,8 +95,10 @@
     </div>
 
     <q-page-sticky position="bottom"
+                   class="text-center"
                    :offset="[18, 18]">
-      <q-chip class="q-body-1">Loja: {{ lojaAtualNome }}</q-chip>
+      <p class="q-caption">Loja</p>
+      <q-chip class="q-body-1">{{ lojaAtualNome }}</q-chip>
     </q-page-sticky>
   </q-page>
 </template>
