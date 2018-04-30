@@ -9,20 +9,12 @@ const api = {
   getConcorrentes(idLoja) {
     return server
       .get('/coletor/concorrentes', { params: { idLoja } })
-      .then(res => {
-        return res.data
-      })
+      .then(res => res.data)
   },
 
   getPesquisas(idLoja) {
     return server
       .get('/coletor/pesquisas', { params: { idLoja } })
-      .then(res => res.data)
-  },
-
-  getIdPesquisaSugestao(idLoja) {
-    return server
-      .get('/coletor/pesquisas/sugestao', { params: { idLoja } })
       .then(res => res.data)
   },
 

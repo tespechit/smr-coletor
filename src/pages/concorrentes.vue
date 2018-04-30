@@ -1,5 +1,5 @@
 <template>
-  <q-page style="padding-bottom: 52px">
+  <q-page>
     <q-layout-header>
       <q-toolbar color="primary">
         <q-btn flat
@@ -7,6 +7,7 @@
                dense
                icon="navigate_before"
                @click="$router.push('/pesquisas')" />
+
         <q-toolbar-title>
           Concorrentes
         </q-toolbar-title>
@@ -19,10 +20,10 @@
       </q-toolbar>
     </q-layout-header>
 
-    <div v-if="concorrentes.length">
+    <div v-if="concorrentes.length"
+         class="q-mb-xl">
       <q-list separator>
-        <q-item sparse
-                highlight
+        <q-item highlight
                 tag="label"
                 v-for="concorrente in concorrentes"
                 :key="concorrente.id">
@@ -30,45 +31,58 @@
             <q-radio v-model="idConcorrente"
                      :val="concorrente.id" />
           </q-item-side>
+
           <q-item-main class="uppercase"
                        :label="concorrente.nome">
             <q-progress class="q-mt-sm"
                         :percentage="progressoConcorrentes[concorrente.id]" />
           </q-item-main>
 
+          <q-item-side right
+                       icon="done_all"
+                       color="positive"
+                       v-if="progressoConcorrentes[concorrente.id] >= 100" />
+
+          <q-item-side right
+                       icon="timelapse"
+                       v-else/>
+
           <q-context-menu class="non-selectable">
-            <q-list-header>Opções</q-list-header>
+            <q-list-header>Ações</q-list-header>
 
             <q-list :highlight="false"
                     link>
               <q-item v-close-overlay
-                      @click.native="avancarConcorrente(concorrente.id)">
-                <q-item-side>
-                  <q-icon size="36px"
-                          name="warning"
-                          color="negative" />
-                </q-item-side>
+                      @click.native="resetarConcorrente(concorrente.id)">
+                <q-item-side icon="undo" />
+                <q-item-main label="Resetar Concorrente"
+                             sublabel="Volta ao primeiro produto." />
+              </q-item>
+
+              <q-item v-close-overlay
+                      @click.native="pularConcorrente(concorrente.id)">
+                <q-item-side icon="fast_forward" />
                 <q-item-main label="Pular Concorrente"
-                             sublabel="Zerar preço dos produtos" />
+                             sublabel="Avança até último produto." />
               </q-item>
             </q-list>
           </q-context-menu>
         </q-item>
       </q-list>
 
-      <div class="fixed-bottom">
-        <q-btn size="lg"
+      <q-page-sticky position="bottom-right"
+                     :offset="[18, 18]">
+        <q-btn round
+               size="lg"
                icon="play_arrow"
-               class="full-width"
                :disable="concorrenteNaoSelecionado"
                color="positive"
-               label="Começar"
-               @click="comecar" />
-      </div>
+               label="xablau!"
+               @click="iniciarColeta" />
+      </q-page-sticky>
     </div>
-
-    <div class="fixed-center full-width text-center"
-         v-else>
+    <div v-else
+         class="fixed-center full-width text-center">
       <p>
         <q-icon name="warning"
                 color="warning"
@@ -105,10 +119,13 @@ export default {
     },
     progressoConcorrentes() {
       return this.$store.getters['coleta/progressoConcorrentes']
+    },
+    concorrenteConcluido() {
+      return this.progressoConcorrentes === 100
     }
   },
   methods: {
-    comecar() {
+    iniciarColeta() {
       const concorrente = this.concorrentes.find(
         concorrente => concorrente.id === this.idConcorrente
       )
@@ -116,12 +133,13 @@ export default {
       this.$store.commit('coleta/setConcorrenteAtual', concorrente)
       this.$router.push('/coleta')
     },
-    avancarConcorrente(idConcorrente) {
+    pularConcorrente(idConcorrente) {
       this.$q
         .dialog({
           title: 'Pular Concorrente',
           message:
-            'Deseja realmente zerar o preço de todos os produtos desse concorrente?',
+            'Essa operação vai zerar o preço de todos os produtos a partir do último coletado.' +
+            ' Deseja continuar?',
           ok: {
             push: true,
             color: 'negative',
@@ -131,11 +149,38 @@ export default {
         })
         .then(() => {
           this.$store
-            .commit('coleta/avancarConcorrente', idConcorrente)
+            .commit('coleta/pularConcorrente', idConcorrente)
             .then(() => {
               this.$q.notify({
                 type: 'positive',
                 message: 'Concorrente ignorado com sucesso!',
+                timeout: 1000
+              })
+            })
+        })
+        .catch(() => {})
+    },
+    resetarConcorrente(idConcorrente) {
+      this.$q
+        .dialog({
+          title: 'Resetar Concorrente',
+          message:
+            'Essa operação vai voltar a posição do primeiro produto.' +
+            ' Deseja continuar?',
+          ok: {
+            push: true,
+            color: 'negative',
+            label: 'Sim'
+          },
+          cancel: 'Não'
+        })
+        .then(() => {
+          this.$store
+            .commit('coleta/resetarConcorrente', idConcorrente)
+            .then(() => {
+              this.$q.notify({
+                type: 'positive',
+                message: 'Concorrente resetado com sucesso!',
                 timeout: 1000
               })
             })

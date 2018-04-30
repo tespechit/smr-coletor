@@ -71,19 +71,33 @@ const mutations = {
 
     coletaAtual.encerrada = coletaAtual.posicao === coletaAtual.totalProdutos
   },
-  avancarConcorrente(state, idConcorrente) {
-    const coleta = state.coletas.find(
+  pularConcorrente(state, idConcorrente) {
+    const coletaAtual = state.coletas.find(
       coleta => coleta.concorrente.id === idConcorrente
     )
-    coleta.encerrada = true
-    coleta.posicao = coleta.totalProdutos
 
-    coleta.produtos.forEach(produto => {
+    const indexProdutoAtual = coletaAtual.produtos.findIndex(
+      produto => produto.dataHoraColeta !== null
+    )
+
+    const posicaoAtual =
+      indexProdutoAtual < 0 ? coletaAtual.totalProdutos : indexProdutoAtual + 1
+
+    coletaAtual.produtos.slice(posicaoAtual).forEach(produto => {
       produto.promocao = false
       produto.foto = null
       produto.precoConcorrente = ''
       produto.dataHoraColeta = Date.now()
     })
+
+    coletaAtual.encerrada = true
+    coletaAtual.posicao = coletaAtual.totalProdutos
+  },
+  resetarConcorrente(state, idConcorrente) {
+    const coleta = state.coletas.find(
+      coleta => coleta.concorrente.id === idConcorrente
+    )
+    coleta.posicao = 1
   }
 }
 
@@ -113,6 +127,7 @@ const actions = {
       }
     })
 
+    commit('setConcorrenteAtual', concorrentes[0])
     commit('setPesquisaAtual', pesquisa)
     commit('setColetas', coletas)
   },

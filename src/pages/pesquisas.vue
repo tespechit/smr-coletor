@@ -1,5 +1,5 @@
 <template>
-  <q-page style="padding-bottom: 52px">
+  <q-page>
     <q-layout-header>
       <q-toolbar color="primary">
         <q-btn flat
@@ -13,10 +13,10 @@
       </q-toolbar>
     </q-layout-header>
 
-    <div v-if="pesquisas.length">
+    <div v-if="pesquisas.length"
+         class="q-mb-xl">
       <q-list separator>
-        <q-item sparse
-                highlight
+        <q-item highlight
                 tag="label"
                 v-for="pesquisa in pesquisas"
                 :key="pesquisa.id">
@@ -27,27 +27,26 @@
           <q-item-main class="uppercase"
                        :label="pesquisa.nome" />
           <q-item-side right
-                       v-if="pesquisa.sugestao">
-            <q-icon name="star"
-                    size="23px"
-                    color="amber" />
+                       v-if="pesquisa.sugestao"
+                       icon="star"
+                       color="amber">
           </q-item-side>
         </q-item>
       </q-list>
 
-      <div class="fixed-bottom">
-        <q-btn size="lg"
-               icon="navigate_next"
-               class="full-width"
+      <q-page-sticky position="bottom-right"
+                     :offset="[18, 18]">
+        <q-btn round
+               size="lg"
+               icon="forward"
                :disable="pesquisaNaoSelecionada"
                color="positive"
-               label="Avançar"
+               label=""
                @click="verificarSeExisteOutraPesquisa" />
-      </div>
+      </q-page-sticky>
     </div>
-
-    <div class="fixed-center full-width text-center"
-         v-else>
+    <div v-else
+         class="fixed-center full-width text-center">
       <p>
         <q-icon name="warning"
                 color="warning"
@@ -95,10 +94,9 @@ export default {
       }
 
       const dialog1 = {
-        title: 'Cuidado !!!',
-        message: `A pesquisa "${
-          pesquisaEmAndamento.nome
-        }" já está em andamento. Deseja realmente APAGAR e COMEÇAR UMA NOVA?`,
+        title: 'Atenção!',
+        message:
+          'Já existe uma pesquisa em andamento. Deseja realmente apaga-la para começar uma nova?',
         cancel: 'Não',
         ok: {
           push: true,
@@ -119,7 +117,8 @@ export default {
         }
       }
 
-      this.$q.dialog(dialog1)
+      this.$q
+        .dialog(dialog1)
         .then(() => {
           return this.$q.dialog(dialog2)
         })

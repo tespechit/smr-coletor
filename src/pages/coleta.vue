@@ -8,13 +8,8 @@
                icon="navigate_before"
                @click="voltarConcorrentes" />
         <q-toolbar-title class="text-no-wrap">
-          <q-breadcrumbs separator=">"
-                         active-color="white"
-                         color="white"
-                         class="q-body-1">
-            <q-breadcrumbs-el :label="pesquisaAtual.nome" />
-            <q-breadcrumbs-el :label="concorrenteAtual.nome" />
-          </q-breadcrumbs>
+          {{ concorrenteAtual.nome }}
+          <span slot="subtitle">{{ pesquisaAtual.nome }}</span>
         </q-toolbar-title>
         <q-btn flat
                dense
@@ -25,17 +20,16 @@
     </q-layout-header>
 
     <div class="row justify-center items-center"
-         style="height: calc(100vh - 150px)"
-         v-if="produtoAtual">
+         style="height: calc(100vh - 150px)">
 
       <div class="q-headline uppercase text-center">
-        {{ produtoAtual.descricao }}
+        {{ produto.descricao }}
       </div>
 
       <div class="row full-width justify-center">
         <div class="row full-width justify-center">
           <div style="width: 50vw">
-            <q-input v-model.lazy="precoConcorrente"
+            <q-input v-model.lazy="produto.precoConcorrente"
                      type="tel"
                      align="right"
                      prefix="R$"
@@ -49,29 +43,31 @@
         </div>
 
         <q-checkbox class="q-mt-lg"
-                    v-model="promocao"
+                    v-model="produto.promocao"
+                    :disable="!produto.precoConcorrente.length"
                     label="Promoção" />
       </div>
     </div>
 
-    <div class="fixed-bottom flex justify-between q-pa-sm"
-         style="background: rgba(247,247,247,.8)">
+    <div class="fixed-bottom flex justify-between q-pa-sm">
+      <q-progress class="q-mb-xs"
+                  :percentage="percentualConcluido" />
       <q-btn flat
              size="lg"
              icon="skip_previous"
              :disable="primeiroItem"
-             color="primary"
+             color="faded"
              @click="voltarProduto" />
       <q-btn v-if="precisaDeFoto"
              size="lg"
              icon="photo_camera"
-             color="negative"
+             color="red"
              class="animate-pop"
              @click="tirarFoto()" />
       <q-btn v-if="ultimoItem"
              push
              size="lg"
-             icon="check"
+             icon="done_all"
              color="positive"
              @click="avancarProduto" />
       <q-btn v-else
@@ -80,19 +76,16 @@
              icon="skip_next"
              color="primary"
              @click="avancarProduto" />
-      <q-progress class="q-mt-sm"
-                  :percentage="percentualConcluido" />
     </div>
   </q-page>
 </template>
 
 <script>
-import { debounce } from 'quasar'
-
 export default {
   name: 'Coleta',
   data() {
     return {
+      produto: {},
       precisaDeFoto: false
     }
   },
@@ -100,6 +93,8 @@ export default {
     if (!this.$store.getters['coleta/emAndamento']) {
       return this.$router.push('/')
     }
+
+    this.carregaProduto()
   },
   computed: {
     pesquisaAtual() {
@@ -119,30 +114,6 @@ export default {
     produtoAtual() {
       return this.$store.getters['coleta/produtoAtual']
     },
-    precoConcorrente: {
-      get() {
-        return this.produtoAtual.precoConcorrente
-      },
-      set: debounce(function(value) {
-        const produto = {
-          ...this.produtoAtual,
-          precoConcorrente: value
-        }
-        this.$store.commit('coleta/atualizarProduto', produto)
-      }, 250)
-    },
-    promocao: {
-      get() {
-        return this.produtoAtual.promocao
-      },
-      set(value) {
-        const produto = {
-          ...this.produtoAtual,
-          promocao: value
-        }
-        this.$store.commit('coleta/atualizarProduto', produto)
-      }
-    },
     produtoIndex() {
       return this.coletaAtual.produtos.findIndex(
         produto => produto.id === this.produtoAtual.id
@@ -159,48 +130,46 @@ export default {
     }
   },
   methods: {
-    atualizarProduto() {
-      this.$store.dispatch('coleta/atualizarProduto', this.produtoAtual)
+    carregaProduto() {
+      this.produto = { ...this.produtoAtual }
     },
-    confirmarSaida(url, message) {
+    voltarConcorrentes() {
+      this.$router.push('/concorrentes')
+    },
+    voltarInicio() {
       this.$q
         .dialog({
           title: 'Confirmação',
-          message,
+          message: 'Deseja voltar para a tela inicial?',
           ok: 'Sim',
           cancel: 'Não'
         })
         .then(() => {
-          this.$router.push(url)
+          this.$router.push('/')
         })
         .catch(() => {})
-    },
-    voltarConcorrentes() {
-      this.confirmarSaida(
-        '/concorrentes',
-        'Deseja voltar para a tela de concorrentes?'
-      )
-    },
-    voltarInicio() {
-      this.confirmarSaida('/', 'Deseja voltar para a tela inicial?')
     },
     voltarProduto() {
       this.atualizarPosicaoProduto(-1)
     },
     avancarProduto() {
-      if (this.ultimoItem) {
-        return this.$router.push('/concorrentes')
-      }
-
       this.precisaDeFoto = this.precisaTirarFoto()
       if (this.precisaDeFoto) {
         return
       }
 
+      if (this.produtoFoiAlterado()) {
+        this.atualizaProduto()
+      }
+
+      if (this.ultimoItem) {
+        return this.$router.push('/concorrentes')
+      }
+
       this.atualizarPosicaoProduto(1)
     },
     precisaTirarFoto() {
-      if (this.produtoAtual.foto !== null) {
+      if (this.produto.foto !== null) {
         return false
       }
 
@@ -209,7 +178,7 @@ export default {
         return false
       }
 
-      if (Number(this.precoConcorrente.replace(',', '.')) === 0) {
+      if (Number(this.produto.precoConcorrente.replace(',', '.')) === 0) {
         return false
       }
 
@@ -224,44 +193,54 @@ export default {
       return true
     },
     calculaDiferencaPrecoEmPercentual() {
-      if (this.produtoAtual.precoVenda <= 0) {
+      if (this.produto.precoVenda <= 0) {
         return 0
       }
-      const precoConcorrente = Number(this.precoConcorrente.replace(',', '.'))
+      const precoConcorrente = Number(
+        this.produto.precoConcorrente.replace(',', '.')
+      )
       const diferenca =
-        (precoConcorrente - this.produtoAtual.precoVenda) /
-        precoConcorrente *
-        100
+        (precoConcorrente - this.produto.precoVenda) / precoConcorrente * 100
       return diferenca < 0 ? diferenca * -1 : diferenca
+    },
+    produtoFoiAlterado() {
+      if (this.produto.dataHoraColeta === null) {
+        return true
+      }
+
+      const props = ['precoConcorrente', 'promocao']
+      return props
+        .map(prop => this.produto[prop] !== this.produtoAtual[prop])
+        .some(isTrue => isTrue)
+    },
+    atualizaProduto() {
+      const produto = {
+        ...this.produto,
+        dataHoraColeta: Date.now()
+      }
+      this.$store.commit('coleta/atualizarProduto', produto)
     },
     atualizarPosicaoProduto(value) {
       this.$store.commit('coleta/atualizarPosicaoProduto', value)
+      this.carregaProduto()
       this.$refs.preco.focus()
     },
     tirarFoto() {
       if (!this.$q.platform.is.cordova) {
-        const produto = {
-          ...this.produtoAtual,
-          foto: 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'
-        }
-        this.$q.notify({
+        this.produto.foto =
+          'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'
+
+        return this.$q.notify({
           position: 'top',
           type: 'warning',
           timeout: 500,
           message: 'Foto ignorada com sucesso!'
         })
-        return this.$store.commit('coleta/atualizarProduto', produto)
       }
 
       navigator.camera.getPicture(
         image => {
-          const foto = 'data:image/jpeg;base64,' + image
-          const produto = {
-            ...this.produtoAtual,
-            foto
-          }
-
-          this.$store.commit('coleta/atualizarProduto', produto)
+          this.produto.foto = 'data:image/jpeg;base64,' + image
 
           this.$q.notify({
             position: 'top',
