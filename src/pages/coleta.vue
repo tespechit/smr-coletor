@@ -8,13 +8,8 @@
                icon="navigate_before"
                @click="voltarConcorrentes" />
         <q-toolbar-title class="text-no-wrap">
-          <q-breadcrumbs separator=">"
-                         active-color="white"
-                         color="white"
-                         class="q-body-1">
-            <q-breadcrumbs-el :label="pesquisaAtual.nome" />
-            <q-breadcrumbs-el :label="concorrenteAtual.nome" />
-          </q-breadcrumbs>
+          {{ concorrenteAtual.nome }}
+          <span slot="subtitle">{{ pesquisaAtual.nome }}</span>
         </q-toolbar-title>
         <q-btn flat
                dense
@@ -56,7 +51,7 @@
 
     <div class="fixed-bottom flex justify-between q-pa-sm">
       <q-progress class="q-mb-xs"
-              :percentage="percentualConcluido" />
+                  :percentage="percentualConcluido" />
       <q-btn flat
              size="lg"
              icon="skip_previous"
