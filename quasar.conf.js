@@ -67,8 +67,6 @@ module.exports = function (ctx) {
         'QCheckbox',
         'QInput',
         'QProgress',
-        'QBreadcrumbs',
-        'QBreadcrumbsEl',
         'QContextMenu',
         'QPageSticky'
       ],
