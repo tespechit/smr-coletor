@@ -98,6 +98,7 @@ const mutations = {
       coleta => coleta.concorrente.id === idConcorrente
     )
     coleta.posicao = 1
+    coleta.encerrada = false
   }
 }
 
