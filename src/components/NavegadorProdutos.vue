@@ -108,7 +108,6 @@ export default {
   },
   methods: {
     setAlterado() {
-      console.log('alterado')
       this.alterado = true
     },
     voltar() {
@@ -192,6 +191,7 @@ export default {
           this.$q.notify('Falha ao acessar a camera')
         },
         {
+          quality: 20,
           destinationType: 0 // DATA_URL
         }
       )
