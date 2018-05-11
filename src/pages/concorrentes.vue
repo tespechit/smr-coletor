@@ -74,12 +74,12 @@
                      :offset="[18, 18]">
         <q-btn round
                size="lg"
-               icon="cloud_upload"
-               color="blue"
+               :icon="coletasEnviadas ? 'done_all' : 'cloud_upload'"
+               :color="coletasEnviadas ? 'blue-4' : 'blue-8'"
                label=""
                v-if="coletaEncerrada"
                :loading="enviando"
-               @click="enviarColeta" />
+               @click="confirmarEnvioColeta" />
       </q-page-sticky>
 
       <q-page-sticky position="bottom-right"
@@ -117,10 +117,16 @@
 <script>
 export default {
   name: 'Concorrentes',
+  mounted() {
+    if (this.coletaEncerrada) {
+      this.notificaEnvioColeta()
+    }
+  },
   data() {
     return {
+      idConcorrente: null,
       enviando: false,
-      idConcorrente: null
+      envioColetaNotificado: false
     }
   },
   computed: {
@@ -135,6 +141,9 @@ export default {
     },
     coletaEncerrada() {
       return this.$store.getters['coleta/encerrada']
+    },
+    coletasEnviadas() {
+      return this.$store.state.coleta.coletasEnviadas
     }
   },
   watch: {
@@ -143,14 +152,23 @@ export default {
         return
       }
 
+      this.notificaEnvioColeta()
+    }
+  },
+  methods: {
+    notificaEnvioColeta() {
+      if (this.envioColetaNotificado) {
+        return
+      }
+
       this.$q.notify({
         type: 'info',
         message: 'Você já pode enviar a coleta!',
         timeout: 1000
       })
-    }
-  },
-  methods: {
+
+      this.envioColetaNotificado = true
+    },
     iniciarColeta() {
       const concorrente = this.concorrentes.find(
         concorrente => concorrente.id === this.idConcorrente
@@ -213,6 +231,26 @@ export default {
         })
         .catch(() => {})
     },
+    confirmarEnvioColeta() {
+      if (!this.coletasEnviadas) {
+        return this.enviarColeta()
+      }
+
+      this.$q
+        .dialog({
+          title: 'Coleta já enviada',
+          message: 'Essa coleta já foi enviada.' + ' Deseja enviar novamente?',
+          ok: {
+            push: true,
+            label: 'Sim'
+          },
+          cancel: 'Não'
+        })
+        .then(() => {
+          this.enviarColeta()
+        })
+        .catch(() => {})
+    },
     enviarColeta() {
       this.enviando = true
 
@@ -220,7 +258,9 @@ export default {
 
       this.$store
         .dispatch('coleta/enviar', idLoja)
-        .then((res) => {
+        .then(res => {
+          this.setColetasEnviada()
+
           this.$q.notify({
             type: 'positive',
             message: `Coleta #${res.idColeta} enviada com sucesso!`
@@ -228,7 +268,10 @@ export default {
         })
         .catch(error => {
           if (error.response) {
-            console.log(error.response.data)
+            this.$q.notify({
+              type: 'negative',
+              message: error.response.data.message
+            })
           } else if (error.request) {
             console.log(JSON.stringify(error.request, null, '\t'))
           } else {
@@ -243,6 +286,9 @@ export default {
         .finally(() => {
           this.enviando = false
         })
+    },
+    setColetasEnviada() {
+      this.$store.commit('coleta/setStatusColetasEnviada', true)
     }
   }
 }
