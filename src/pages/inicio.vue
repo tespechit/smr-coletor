@@ -34,18 +34,21 @@
         </q-item>
         <q-item>
           <q-item-main class="text-center">
-            <q-btn push
+            <q-btn rounded
                    color="positive"
                    class="full-width"
                    label="Sincronizar"
                    :loading="sincronizando"
                    icon="sync"
                    @click="sincronizar" />
-            <small class="q-caption text-grey-8"
-                   v-if="dataUltimaSincronizacao !== null"> Última sincronização em: {{ dataUltimaSincronizacao }}.</small>
-            <small class="q-caption text-red-8"
-                   v-else>
-              <q-icon name="warning" /> Aplicativo ainda não foi sincronizado.</small>
+
+            <div class="q-pt-sm">
+              <small class="q-body-2 text-grey-8"
+                     v-if="dataUltimaSincronizacao !== null"> Última sincronização em: <br> {{ dataUltimaSincronizacao }}</small>
+              <small class="q-body-2 text-red-8"
+                     v-else>
+                <q-icon name="warning" /> Aplicativo ainda não foi sincronizado.</small>
+            </div>
           </q-item-main>
         </q-item>
       </q-list>
