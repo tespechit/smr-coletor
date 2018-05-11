@@ -3,7 +3,7 @@
        style="height: calc(100vh - 50px">
 
     <div class="full-width">
-      <div class="q-headline uppercase text-center">
+      <div class="q-headline uppercase text-center descricao-produto">
         {{ produto.descricao }}
       </div>
     </div>
@@ -204,7 +204,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .q-input .q-input-target {
   height: inherit;
   outline: 0;
@@ -212,5 +212,10 @@ export default {
 }
 .q-input .q-icon {
   margin: 5px;
+}
+
+.descricao-produto {
+  height: 96px; /* .q-caption line-height * 3 */
+  overflow: hidden;
 }
 </style>
