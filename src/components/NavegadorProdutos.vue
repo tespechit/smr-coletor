@@ -43,6 +43,7 @@
                icon="skip_previous"
                :disable="isPrimeiro"
                color="faded"
+               v-touch-hold.prevent:1000="() => atualizarPosicao(-10)"
                @click="voltar" />
 
         <q-btn v-if="precisaDeFoto && produto.foto == null"
