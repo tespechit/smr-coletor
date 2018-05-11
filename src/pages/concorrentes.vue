@@ -70,14 +70,26 @@
         </q-item>
       </q-list>
 
+      <q-page-sticky position="bottom-left"
+                     :offset="[18, 18]">
+        <q-btn round
+               size="lg"
+               icon="cloud_upload"
+               color="blue"
+               label=""
+               v-if="coletaEncerrada"
+               :loading="enviando"
+               @click="enviarColeta" />
+      </q-page-sticky>
+
       <q-page-sticky position="bottom-right"
                      :offset="[18, 18]">
         <q-btn round
                size="lg"
                icon="play_arrow"
-               :disable="concorrenteNaoSelecionado"
                color="positive"
-               label="xablau!"
+               label=""
+               :disable="concorrenteNaoSelecionado"
                @click="iniciarColeta" />
       </q-page-sticky>
     </div>
@@ -107,6 +119,7 @@ export default {
   name: 'Concorrentes',
   data() {
     return {
+      enviando: false,
       idConcorrente: null
     }
   },
@@ -120,8 +133,21 @@ export default {
     progressoConcorrentes() {
       return this.$store.getters['coleta/progressoConcorrentes']
     },
-    concorrenteConcluido() {
-      return this.progressoConcorrentes === 100
+    coletaEncerrada() {
+      return this.$store.getters['coleta/encerrada']
+    }
+  },
+  watch: {
+    coletaEncerrada(value) {
+      if (!value) {
+        return
+      }
+
+      this.$q.notify({
+        type: 'info',
+        message: 'Você já pode enviar a coleta!',
+        timeout: 1000
+      })
     }
   },
   methods: {
@@ -186,6 +212,37 @@ export default {
             })
         })
         .catch(() => {})
+    },
+    enviarColeta() {
+      this.enviando = true
+
+      const idLoja = this.$store.state.global.idLoja
+
+      this.$store
+        .dispatch('coleta/enviar', idLoja)
+        .then((res) => {
+          this.$q.notify({
+            type: 'positive',
+            message: `Coleta #${res.idColeta} enviada com sucesso!`
+          })
+        })
+        .catch(error => {
+          if (error.response) {
+            console.log(error.response.data)
+          } else if (error.request) {
+            console.log(JSON.stringify(error.request, null, '\t'))
+          } else {
+            console.log(error.message)
+          }
+
+          this.$q.notify({
+            type: 'negative',
+            message: 'Falha ao enviar coleta.'
+          })
+        })
+        .finally(() => {
+          this.enviando = false
+        })
     }
   }
 }
