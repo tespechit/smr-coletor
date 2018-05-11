@@ -205,7 +205,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
 .q-input .q-input-target {
   height: inherit;
   outline: 0;
