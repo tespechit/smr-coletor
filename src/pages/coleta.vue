@@ -23,7 +23,8 @@
                         :posicao="coletaAtual.posicao"
                         diferenca-preco-maxima="25"
                         @atualizar-posicao="atualizarPosicao"
-                        @atualizar-produto="atualizarProduto"></navegador-produtos>
+                        @atualizar-produto="atualizarProduto"
+                        @ultimo-produto="$router.push('/concorrentes')"></navegador-produtos>
   </q-page>
 </template>
 

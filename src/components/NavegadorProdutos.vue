@@ -131,7 +131,7 @@ export default {
       }
 
       if (this.isUltimo) {
-        return this.$router.push('/concorrentes')
+        return this.$emit('ultimo-produto')
       }
 
       this.atualizarPosicao(1)
