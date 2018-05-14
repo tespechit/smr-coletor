@@ -56,7 +56,7 @@ export default {
       )
     },
     produtoAtual() {
-      return this.coletaAtual.produtos[this.coletaAtual.posicao]
+      return this.coletaAtual.produtos[this.coletaAtual.posicao - 1]
     },
     isPrimeiro() {
       return this.coletaAtual.posicao === 1
