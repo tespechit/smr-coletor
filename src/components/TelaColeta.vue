@@ -19,7 +19,7 @@
                    v-mask="'money'"
                    autofocus
                    clearable
-                   @keyup.enter="proximo"
+                   @keyup.enter="avancaPosicao"
                    @input="setAlterado" />
         </div>
       </div>
@@ -44,7 +44,7 @@
                :disable="isPrimeiro"
                color="faded"
                v-touch-hold.prevent:1000="() => atualizarPosicao(-10)"
-               @click="voltar" />
+               @click="voltaPosicao" />
 
         <q-btn v-if="precisaDeFoto && produto.foto == null"
                flat
@@ -67,14 +67,14 @@
                size="lg"
                icon="done_all"
                color="positive"
-               @click="proximo" />
+               @click="avancaPosicao" />
 
         <q-btn v-else
                flat
                size="lg"
                icon="skip_next"
                color="primary"
-               @click="proximo" />
+               @click="avancaPosicao" />
       </div>
     </div>
   </div>
@@ -82,8 +82,14 @@
 
 <script>
 export default {
-  name: 'NavegadorProdutos',
-  props: ['produtos', 'posicao', 'diferenca-preco-maxima'],
+  name: 'TelaColeta',
+  props: [
+    'produto',
+    'diferenca-preco-maxima',
+    'is-ultimo',
+    'is-primeiro',
+    'percentual-progresso-coleta'
+  ],
   data() {
     return {
       alterado: false,
@@ -91,18 +97,6 @@ export default {
     }
   },
   computed: {
-    produto() {
-      return this.produtos[this.posicao - 1]
-    },
-    isPrimeiro() {
-      return this.posicao === 1
-    },
-    isUltimo() {
-      return this.posicao === this.produtos.length
-    },
-    percentualProgressoColeta() {
-      return this.posicao / this.produtos.length * 100
-    },
     precoConcorrente() {
       return Number(this.produto.precoConcorrente.replace(',', '.'))
     }
@@ -111,10 +105,10 @@ export default {
     setAlterado() {
       this.alterado = true
     },
-    voltar() {
+    voltaPosicao() {
       this.atualizarPosicao(-1)
     },
-    proximo() {
+    avancaPosicao() {
       this.precisaDeFoto = this.precisaTirarFoto()
       if (this.precisaDeFoto) {
         return this.$q.notify({
@@ -198,7 +192,7 @@ export default {
       )
     },
     apagarFoto() {
-      this.produto.foto = null;
+      this.produto.foto = null
       this.setAlterado()
     }
   }

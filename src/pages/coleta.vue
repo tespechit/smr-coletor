@@ -19,22 +19,24 @@
       </q-toolbar>
     </q-layout-header>
 
-    <navegador-produtos :produtos="coletaAtual.produtos"
-                        :posicao="coletaAtual.posicao"
-                        diferenca-preco-maxima="25"
-                        @atualizar-posicao="atualizarPosicao"
-                        @atualizar-produto="atualizarProduto"
-                        @ultimo-produto="$router.push('/concorrentes')"></navegador-produtos>
+    <tela-coleta :produto="produtoAtual"
+                 diferenca-preco-maxima="25"
+                 :is-primeiro="isPrimeiro"
+                 :is-ultimo="isUltimo"
+                 :percentual-progresso-coleta="percentualProgressoColeta"
+                 @atualizar-posicao="atualizarPosicao"
+                 @atualizar-produto="atualizarProduto"
+                 @ultimo-produto="$router.push('/concorrentes')"></tela-coleta>
   </q-page>
 </template>
 
 <script>
-import NavegadorProdutos from 'components/NavegadorProdutos'
+import TelaColeta from 'components/TelaColeta'
 
 export default {
   name: 'Coleta',
   components: {
-    NavegadorProdutos
+    TelaColeta
   },
   created() {
     if (!this.$store.getters['coleta/emAndamento']) {
@@ -52,6 +54,18 @@ export default {
       return this.$store.state.coleta.coletas.find(
         coleta => coleta.concorrente.id === this.concorrenteAtual.id
       )
+    },
+    produtoAtual() {
+      return this.coletaAtual.produtos[this.coletaAtual.posicao]
+    },
+    isPrimeiro() {
+      return this.coletaAtual.posicao === 1
+    },
+    isUltimo() {
+      return this.coletaAtual.posicao === this.coletaAtual.totalProdutos
+    },
+    percentualProgressoColeta() {
+      return this.coletaAtual.posicao / this.coletaAtual.totalProdutos * 100
     }
   },
   methods: {
