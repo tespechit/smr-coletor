@@ -70,14 +70,26 @@
         </q-item>
       </q-list>
 
+      <q-page-sticky position="bottom-left"
+                     :offset="[18, 18]">
+        <q-btn round
+               size="lg"
+               :icon="coletasEnviadas ? 'done_all' : 'cloud_upload'"
+               :color="coletasEnviadas ? 'blue-4' : 'blue-8'"
+               label=""
+               v-if="coletaEncerrada"
+               :loading="enviando"
+               @click="confirmarEnvioColeta" />
+      </q-page-sticky>
+
       <q-page-sticky position="bottom-right"
                      :offset="[18, 18]">
         <q-btn round
                size="lg"
                icon="play_arrow"
-               :disable="concorrenteNaoSelecionado"
                color="positive"
-               label="xablau!"
+               label=""
+               :disable="concorrenteNaoSelecionado"
                @click="iniciarColeta" />
       </q-page-sticky>
     </div>
@@ -105,9 +117,16 @@
 <script>
 export default {
   name: 'Concorrentes',
+  mounted() {
+    if (this.coletaEncerrada) {
+      this.notificaEnvioColeta()
+    }
+  },
   data() {
     return {
-      idConcorrente: null
+      idConcorrente: null,
+      enviando: false,
+      envioColetaNotificado: false
     }
   },
   computed: {
@@ -120,11 +139,36 @@ export default {
     progressoConcorrentes() {
       return this.$store.getters['coleta/progressoConcorrentes']
     },
-    concorrenteConcluido() {
-      return this.progressoConcorrentes === 100
+    coletaEncerrada() {
+      return this.$store.getters['coleta/encerrada']
+    },
+    coletasEnviadas() {
+      return this.$store.state.coleta.coletasEnviadas
+    }
+  },
+  watch: {
+    coletaEncerrada(value) {
+      if (!value) {
+        return
+      }
+
+      this.notificaEnvioColeta()
     }
   },
   methods: {
+    notificaEnvioColeta() {
+      if (this.envioColetaNotificado) {
+        return
+      }
+
+      this.$q.notify({
+        type: 'info',
+        message: 'Você já pode enviar a coleta!',
+        timeout: 1000
+      })
+
+      this.envioColetaNotificado = true
+    },
     iniciarColeta() {
       const concorrente = this.concorrentes.find(
         concorrente => concorrente.id === this.idConcorrente
@@ -186,6 +230,65 @@ export default {
             })
         })
         .catch(() => {})
+    },
+    confirmarEnvioColeta() {
+      if (!this.coletasEnviadas) {
+        return this.enviarColeta()
+      }
+
+      this.$q
+        .dialog({
+          title: 'Coleta já enviada',
+          message: 'Essa coleta já foi enviada.' + ' Deseja enviar novamente?',
+          ok: {
+            push: true,
+            label: 'Sim'
+          },
+          cancel: 'Não'
+        })
+        .then(() => {
+          this.enviarColeta()
+        })
+        .catch(() => {})
+    },
+    enviarColeta() {
+      this.enviando = true
+
+      const idLoja = this.$store.state.global.idLoja
+
+      this.$store
+        .dispatch('coleta/enviar', idLoja)
+        .then(res => {
+          this.setColetasEnviada()
+
+          this.$q.notify({
+            type: 'positive',
+            message: `Coleta #${res.idColeta} enviada com sucesso!`
+          })
+        })
+        .catch(error => {
+          if (error.response) {
+            this.$q.notify({
+              type: 'negative',
+              message: error.response.data.message
+            })
+          } else if (error.request) {
+            console.log(JSON.stringify(error.request, null, '\t'))
+          } else {
+            console.log(error.message)
+          }
+
+          this.$q.notify({
+            type: 'negative',
+            message: 'Falha ao enviar coleta.'
+          })
+        })
+        .finally(() => {
+          this.enviando = false
+        })
+    },
+    setColetasEnviada() {
+      this.$store.commit('coleta/setStatusColetasEnviada', true)
     }
   }
 }

@@ -9,6 +9,7 @@ const findColetaAtual = state => {
 const state = {
   pesquisaAtual: null,
   concorrenteAtual: null,
+  coletasEnviadas: false,
   coletas: []
 }
 
@@ -98,6 +99,10 @@ const mutations = {
       coleta => coleta.concorrente.id === idConcorrente
     )
     coleta.posicao = 1
+    coleta.encerrada = false
+  },
+  setStatusColetasEnviada(state, status) {
+    state.coletasEnviadas = status
   }
 }
 
@@ -130,6 +135,7 @@ const actions = {
     commit('setConcorrenteAtual', concorrentes[0])
     commit('setPesquisaAtual', pesquisa)
     commit('setColetas', coletas)
+    commit('setStatusColetasEnviada', false)
   },
   enviar({ state }, idLoja) {
     const coletas = state.coletas.map(coleta => {

@@ -10,6 +10,12 @@
         <q-toolbar-title>
           Pesquisas
         </q-toolbar-title>
+
+        <q-btn flat
+               dense
+               icon="home"
+               label=""
+               @click="$router.push('/')" />
       </q-toolbar>
     </q-layout-header>
 

@@ -1,5 +1,5 @@
 import { date } from 'quasar'
-import api from '../../services/api'
+import api from 'src/services/api'
 
 const state = {
   idLoja: '1',
@@ -8,9 +8,9 @@ const state = {
     { label: 'L2 - Cordeiro', value: '3' },
     { label: 'L3 - Piedade', value: '4' }
   ],
-  dataUltimaSincronizacao: null,
   pesquisas: [],
-  concorrentes: []
+  concorrentes: [],
+  dataUltimaSincronizacao: null
 }
 
 const getters = {
@@ -53,8 +53,6 @@ const actions = {
     commit('setIdLoja', idLoja)
   },
   sincronizarDadosLoja({ commit, dispatch }) {
-    commit('limparStorage', null, { root: true })
-
     return Promise.all([
       dispatch('getConcorrentes'),
       dispatch('getPesquisas')

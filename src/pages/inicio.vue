@@ -34,18 +34,21 @@
         </q-item>
         <q-item>
           <q-item-main class="text-center">
-            <q-btn push
+            <q-btn rounded
                    color="positive"
                    class="full-width"
                    label="Sincronizar"
                    :loading="sincronizando"
                    icon="sync"
                    @click="sincronizar" />
-            <small class="q-caption text-grey-8"
-                   v-if="dataUltimaSincronizacao !== null"> Última sincronização em: {{ dataUltimaSincronizacao }}.</small>
-            <small class="q-caption text-red-8"
-                   v-else>
-              <q-icon name="warning" /> Aplicativo ainda não foi sincronizado.</small>
+
+            <div class="q-pt-sm">
+              <small class="q-body-2 text-grey-8"
+                     v-if="dataUltimaSincronizacao !== null"> Última sincronização feita em: <br> {{ dataUltimaSincronizacao }}</small>
+              <small class="q-body-2 text-red-8"
+                     v-else>
+                <q-icon name="warning" /> Aplicativo ainda não foi sincronizado.</small>
+            </div>
           </q-item-main>
         </q-item>
       </q-list>
@@ -55,8 +58,8 @@
           <img alt="SMR Logo"
                style="height: 48px"
                src="~assets/smr-logo.png"
-               @click="easteregg++">
-          <div v-if="easteregg > 3"
+               @click="easterEgg++">
+          <div v-if="easterEgg > 3"
                class="text-grey-6 q-caption">
             Desenvolvido por Gustavo Novaes
           </div>
@@ -82,16 +85,6 @@
              :disable="!coletaEmAndamento"
              icon="forward"
              @click="continuar" />
-      <q-btn push
-             rounded
-             size="lg"
-             color="positive"
-             class="full-width q-mb-lg"
-             :disable="!coletaEncerrada"
-             label="Enviar"
-             icon="file_upload"
-             :loading="enviando"
-             @click="enviar" />
     </div>
 
     <q-page-sticky position="bottom"
@@ -108,10 +101,9 @@ export default {
   name: 'Inicio',
   data() {
     return {
-      easteregg: 1,
+      easterEgg: 1,
       drawerOpen: false,
-      sincronizando: false,
-      enviando: false
+      sincronizando: false
     }
   },
   computed: {
@@ -129,9 +121,6 @@ export default {
     },
     coletaEmAndamento() {
       return this.$store.getters['coleta/emAndamento']
-    },
-    coletaEncerrada() {
-      return this.$store.getters['coleta/encerrada']
     }
   },
   methods: {
@@ -172,35 +161,6 @@ export default {
       }
 
       return this.$router.push('/coleta')
-    },
-    enviar() {
-      this.enviando = true
-
-      this.$store
-        .dispatch('coleta/enviar', this.idLoja)
-        .then(({ idColeta }) => {
-          this.$q.notify({
-            type: 'positive',
-            message: `Coleta #${idColeta} enviada com sucesso!`
-          })
-        })
-        .catch(error => {
-          if (error.response) {
-            console.log(error.response.data)
-          } else if (error.request) {
-            console.log(JSON.stringify(error.request, null, '\t'))
-          } else {
-            console.log(error.message)
-          }
-
-          this.$q.notify({
-            type: 'negative',
-            message: 'Falha ao enviar coleta.'
-          })
-        })
-        .finally(() => {
-          this.enviando = false
-        })
     }
   }
 }
