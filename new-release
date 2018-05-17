@@ -1,0 +1,11 @@
+#!/bin/bash
+
+_VERSION="$1"
+
+[[ -z "$_VERSION" ]] && { echo "Versão não especificada. Tente: $0 <versao>"; exit 1; }
+
+git flow release start $_VERSION
+sed -i "s/\"version\":.*/\"version\": \"$_VERSION\",/" ./package.json
+sed -i "s/ version=\"[.0-9]*\" / version=\"$_VERSION\" /" ./src-cordova/config.xml
+git flow release finish
+
