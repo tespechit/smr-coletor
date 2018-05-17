@@ -2,7 +2,7 @@
 rm app.apk
 
 rm -rf src-cordova/res/screen
-rm -rf src-cordova/platforms/android/res/drawable*
+rm -rf src-cordova/platforms/android/app/src/main/res/drawable*
 
 quasar build --clean -m cordova -T android
 cp src-cordova/platforms/android/app/build/outputs/apk/release/app-release-unsigned.apk app.apk
