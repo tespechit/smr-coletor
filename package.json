@@ -1,6 +1,6 @@
 {
   "name": "smr-coletor",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "App para coleta de preços nos concorrentes",
   "productName": "SMRColetor",
   "cordovaId": "br.com.gustavonovaes.smrcoletor",
