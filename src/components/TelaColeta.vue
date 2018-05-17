@@ -11,7 +11,7 @@
     <div class="full-width">
       <div class="row">
         <div class="col-6 offset-3">
-          <q-input v-model="produto.precoConcorrente"
+          <q-input v-model="produtoAtual.precoConcorrente"
                    type="tel"
                    align="right"
                    prefix="R$"
@@ -26,8 +26,8 @@
 
       <div class="row justify-center">
         <q-checkbox class="q-mt-lg"
-                    v-model="produto.promocao"
-                    :disable="!produto.precoConcorrente.length"
+                    v-model="produtoAtual.promocao"
+                    :disable="!produtoAtual.precoConcorrente.length"
                     label="Promoção"
                     @input="setAlterado()" />
       </div>
@@ -93,12 +93,19 @@ export default {
   data() {
     return {
       alterado: false,
-      precisaDeFoto: false
+      precisaDeFoto: false,
+      produtoAtual: {}
     }
   },
-  computed: {
-    precoConcorrente() {
-      return Number(this.produto.precoConcorrente.replace(',', '.'))
+  created() {
+    this.produtoAtual = { ...this.produto }
+  },
+  watch: {
+    produto: {
+      deep: true,
+      handler() {
+        this.produtoAtual = { ...this.produto }
+      }
     }
   },
   methods: {
@@ -120,9 +127,9 @@ export default {
         })
       }
 
-      if (this.alterado || this.produto.dataHoraColeta === null) {
+      if (this.alterado || this.produtoAtual.dataHoraColeta === null) {
         this.alterado = false
-        this.atualizaProduto()
+        this.atualizarProduto()
       }
 
       if (this.isUltimo) {
@@ -131,9 +138,9 @@ export default {
 
       this.atualizarPosicao(1)
     },
-    atualizaProduto() {
+    atualizarProduto() {
       const produto = {
-        ...this.produto,
+        ...this.produtoAtual,
         dataHoraColeta: Date.now()
       }
       this.$emit('atualizar-produto', produto)
@@ -143,14 +150,14 @@ export default {
       this.$refs.preco.focus()
     },
     precisaTirarFoto() {
-      if (this.produto.foto !== null) {
+      if (this.produtoAtual.foto !== null) {
         return false
       }
 
       const precoConcorrente = Number(
-        this.produto.precoConcorrente.replace(',', '.')
+        this.produtoAtual.precoConcorrente.replace(',', '.')
       )
-      const precoVenda = this.produto.precoVenda
+      const precoVenda = this.produtoAtual.precoVenda
       if (precoConcorrente <= 0 || precoVenda <= 0) {
         return false
       }
@@ -162,7 +169,7 @@ export default {
     },
     tirarFoto() {
       if (!this.$q.platform.is.cordova) {
-        this.produto.foto =
+        this.produtoAtual.foto =
           'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'
         return this.$q.notify({
           position: 'top',
@@ -174,7 +181,7 @@ export default {
 
       navigator.camera.getPicture(
         image => {
-          this.produto.foto = 'data:image/jpeg;base64,' + image
+          this.produtoAtual.foto = 'data:image/jpeg;base64,' + image
           this.$q.notify({
             position: 'top',
             type: 'positive',
@@ -192,7 +199,7 @@ export default {
       )
     },
     apagarFoto() {
-      this.produto.foto = null
+      this.produtoAtual.foto = null
       this.setAlterado()
     }
   }
