@@ -40,7 +40,8 @@
                    label="Sincronizar"
                    :loading="sincronizando"
                    icon="sync"
-                   @click="sincronizar" />
+                   @click="sincronizar"
+                   v-touch-hold.prevent:1000="limparStore" />
 
             <div class="q-pt-sm">
               <small class="q-body-2 text-grey-8"
@@ -161,6 +162,14 @@ export default {
       }
 
       return this.$router.push('/coleta')
+    },
+    limparStore(obj) {
+      this.$q.notify({
+        type: 'negative',
+        message: 'Banco de Dados apagado!',
+        timeout: 1500
+      })
+      this.$store.dispatch('limparStore')
     }
   }
 }
