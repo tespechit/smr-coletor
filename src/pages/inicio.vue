@@ -44,7 +44,7 @@
 
             <div class="q-pt-sm">
               <small class="q-body-2 text-grey-8"
-                     v-if="dataUltimaSincronizacao !== null"> Última sincronização em: <br> {{ dataUltimaSincronizacao }}</small>
+                     v-if="dataUltimaSincronizacao !== null"> Última sincronização feita em: <br> {{ dataUltimaSincronizacao }}</small>
               <small class="q-body-2 text-red-8"
                      v-else>
                 <q-icon name="warning" /> Aplicativo ainda não foi sincronizado.</small>
