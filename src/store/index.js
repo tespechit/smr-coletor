@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import { LocalStorage } from 'quasar'
+import { LocalStorage, throttle } from 'quasar'
 
 import global from './modules/global'
 import coleta from './modules/coleta'
@@ -26,7 +26,9 @@ const store = new Vuex.Store({
 })
 
 store.subscribe((mutation, state) => {
-  LocalStorage.set('store', JSON.stringify(state))
+  throttle(function() {
+    LocalStorage.set('store', JSON.stringify(state))
+  }, 500)
 })
 
 export default store
