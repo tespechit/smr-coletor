@@ -266,21 +266,10 @@ export default {
             message: `Coleta #${res.idColeta} enviada com sucesso!`
           })
         })
-        .catch(error => {
-          if (error.response) {
-            this.$q.notify({
-              type: 'negative',
-              message: error.response.data.message
-            })
-          } else if (error.request) {
-            console.log(JSON.stringify(error.request, null, '\t'))
-          } else {
-            console.log(error.message)
-          }
-
+        .catch(err => {
           this.$q.notify({
             type: 'negative',
-            message: 'Falha ao enviar coleta.'
+            message: err
           })
         })
         .finally(() => {

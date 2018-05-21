@@ -140,12 +140,9 @@ export default {
           })
         })
         .catch(err => {
-          if (err) {
-            console.error(err)
-          }
           this.$q.notify({
             type: 'negative',
-            message: 'Falha ao sincronizar App'
+            message: err
           })
         })
         .finally(() => {
