@@ -2,7 +2,10 @@ import axios from 'axios'
 
 const server = axios.create({
   baseURL: 'http://192.168.0.221:8080/api/',
-  timeout: 30000
+  timeout: 30000,
+  headers: {
+    'X-Requested-With': 'XMLHttpRequest'
+  }
 })
 
 const api = {
