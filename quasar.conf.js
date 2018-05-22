@@ -41,7 +41,7 @@ module.exports = function (ctx) {
     devServer: {
       // https: true,
       // port: 8080,
-      open: true // opens browser window automatically
+      // open: true // opens browser window automatically
     },
     // framework: 'all' --- includes everything; for dev only!
     framework: {
@@ -78,8 +78,7 @@ module.exports = function (ctx) {
       // Quasar plugins
       plugins: [
         'Dialog',
-        'Notify',
-        'LocalStorage'
+        'Notify'
       ]
     },
     // animations: 'all' --- includes all animations
@@ -125,7 +124,7 @@ module.exports = function (ctx) {
       }
     },
     cordova: {
-      // id: 'org.cordova.quasar.app'
+      id: 'br.com.gustavonovaes.smrcoletor'
     },
     electron: {
       extendWebpack (cfg) {

@@ -1,5 +1,5 @@
 <template>
-  <q-page>
+  <q-page v-if="concorrenteAtual">
     <q-layout-header>
       <q-toolbar color="primary">
         <q-btn flat

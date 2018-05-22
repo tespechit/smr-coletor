@@ -20,8 +20,7 @@
       </q-toolbar>
     </q-layout-header>
 
-    <div v-if="concorrentes.length"
-         class="q-mb-xl">
+    <div v-if="concorrentes.length">
       <q-list separator>
         <q-item highlight
                 tag="label"
@@ -117,16 +116,10 @@
 <script>
 export default {
   name: 'Concorrentes',
-  mounted() {
-    if (this.coletaEncerrada) {
-      this.notificaEnvioColeta()
-    }
-  },
   data() {
     return {
       idConcorrente: null,
-      enviando: false,
-      envioColetaNotificado: false
+      enviando: false
     }
   },
   computed: {
@@ -146,29 +139,7 @@ export default {
       return this.$store.state.coleta.coletasEnviadas
     }
   },
-  watch: {
-    coletaEncerrada(value) {
-      if (!value) {
-        return
-      }
-
-      this.notificaEnvioColeta()
-    }
-  },
   methods: {
-    notificaEnvioColeta() {
-      if (this.envioColetaNotificado) {
-        return
-      }
-
-      this.$q.notify({
-        type: 'info',
-        message: 'Você já pode enviar a coleta!',
-        timeout: 1000
-      })
-
-      this.envioColetaNotificado = true
-    },
     iniciarColeta() {
       const concorrente = this.concorrentes.find(
         concorrente => concorrente.id === this.idConcorrente
@@ -259,36 +230,22 @@ export default {
       this.$store
         .dispatch('coleta/enviar', idLoja)
         .then(res => {
-          this.setColetasEnviada()
+          this.$store.commit('coleta/setStatusColetasEnviada', true)
 
           this.$q.notify({
             type: 'positive',
             message: `Coleta #${res.idColeta} enviada com sucesso!`
           })
         })
-        .catch(error => {
-          if (error.response) {
-            this.$q.notify({
-              type: 'negative',
-              message: error.response.data.message
-            })
-          } else if (error.request) {
-            console.log(JSON.stringify(error.request, null, '\t'))
-          } else {
-            console.log(error.message)
-          }
-
+        .catch(err => {
           this.$q.notify({
             type: 'negative',
-            message: 'Falha ao enviar coleta.'
+            message: err
           })
         })
         .finally(() => {
           this.enviando = false
         })
-    },
-    setColetasEnviada() {
-      this.$store.commit('coleta/setStatusColetasEnviada', true)
     }
   }
 }
