@@ -1,9 +1,50 @@
+import axios from 'axios'
 import api from '../../services/api'
 
 const findColetaAtual = state => {
   return state.coletas.find(coleta => {
     return coleta.concorrente.id === state.concorrenteAtual.id
   })
+}
+
+const converteFotoParaBase64 = (filePath) => {
+  return axios.get(filePath, { responseType: 'arraybuffer' }).then(response => {
+    return 'data:image/jpeg;base64,' + Buffer.from(response.data, 'binary').toString('base64')
+  })
+}
+
+const parseColetas = coletas => {
+  return coletas.map(async coleta => {
+    const promises = coleta.produtos.map(produto => {
+      return parseProduto(produto)
+    })
+
+    const produtos = await Promise.all(promises);
+
+    return {
+      idConcorrente: coleta.concorrente.id,
+      produtos
+    }
+  })
+}
+
+const parseProduto = async (produto) => {
+  const precoConcorrente = Number(
+    produto.precoConcorrente.replace('.', '').replace(',', '.')
+  )
+
+  let foto = null;
+  if (produto.foto && produto.foto.length > 0) {
+    foto = await converteFotoParaBase64(produto.foto)
+  }
+
+  return {
+    id: produto.id,
+    precoConcorrente,
+    foto,
+    promocao: produto.promocao,
+    dataHoraColeta: produto.dataHoraColeta
+  }
 }
 
 const state = {
@@ -138,27 +179,9 @@ const actions = {
     commit('setStatusColetasEnviada', false)
   },
   enviar({ state }, idLoja) {
-    const coletas = state.coletas.map(coleta => {
-      const produtos = coleta.produtos.map(produto => {
-        const precoConcorrente = Number(
-          produto.precoConcorrente.replace('.', '').replace(',', '.')
-        )
-
-        return {
-          id: produto.id,
-          precoConcorrente,
-          foto: produto.foto,
-          promocao: produto.promocao,
-          dataHoraColeta: produto.dataHoraColeta
-        }
-      })
-
-      return {
-        idConcorrente: coleta.concorrente.id,
-        produtos
-      }
+    return Promise.all(parseColetas(state.coletas)).then((coletas) => {
+      return api.enviarColeta(idLoja, state.pesquisaAtual.id, coletas)
     })
-    return api.enviarColeta(idLoja, state.pesquisaAtual.id, coletas)
   }
 }
 

@@ -4,7 +4,7 @@
 
     <div class="full-width">
       <div class="q-headline uppercase text-center descricao-produto">
-        {{ produto.descricao }}
+        {{ produtoAtual.descricao }}
       </div>
     </div>
 
@@ -46,7 +46,7 @@
                v-touch-hold.prevent:1000="() => atualizarPosicao(-10)"
                @click="voltaPosicao" />
 
-        <q-btn v-if="precisaDeFoto && produto.foto == null"
+        <q-btn v-if="precisaDeFoto && produtoAtual.foto == null"
                flat
                size="lg"
                icon="photo_camera"
@@ -54,7 +54,7 @@
                class="animate-pop"
                @click="tirarFoto" />
 
-        <q-btn v-if="produto.foto"
+        <q-btn v-if="produtoAtual.foto"
                flat
                size="lg"
                icon="delete_forever"
@@ -118,13 +118,7 @@ export default {
     avancaPosicao() {
       this.precisaDeFoto = this.precisaTirarFoto()
       if (this.precisaDeFoto) {
-        return this.$q.notify({
-          position: 'top',
-          type: 'warning',
-          icon: 'photo_camera',
-          timeout: 1500,
-          message: 'Tire uma foto da etiqueta do produto.'
-        })
+        return this.tirarFoto()
       }
 
       if (this.alterado || this.produtoAtual.dataHoraColeta === null) {
@@ -169,34 +163,21 @@ export default {
     },
     tirarFoto() {
       if (!this.$q.platform.is.cordova) {
-        this.produtoAtual.foto =
-          'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'
-        return this.$q.notify({
-          position: 'top',
-          type: 'warning',
-          timeout: 500,
-          message: 'Foto ignorada com sucesso!'
-        })
+        this.produtoAtual.foto = ''
+        return
       }
 
-      navigator.camera.getPicture(
-        image => {
-          this.produtoAtual.foto = 'data:image/jpeg;base64,' + image
-          this.$q.notify({
-            position: 'top',
-            type: 'positive',
-            timeout: 1500,
-            message: 'Foto salva com sucesso!'
-          })
-        },
-        () => {
-          this.$q.notify('Falha ao acessar a camera')
-        },
-        {
-          quality: 20,
-          destinationType: 0 // DATA_URL
-        }
-      )
+      const getPictureHandler = filePath => {
+        this.produtoAtual.foto = filePath
+        this.avancaPosicao()
+      }
+
+      const getPictureErrorHandler = () =>
+        this.$q.notify('Falha ao acessar a camera')
+
+      navigator.camera.getPicture(getPictureHandler, getPictureErrorHandler, {
+        quality: 20
+      })
     },
     apagarFoto() {
       this.produtoAtual.foto = null
