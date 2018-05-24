@@ -6,7 +6,7 @@ _VERSION="$1"
 
 git flow release start $_VERSION
 sed -i "s/\"version\":.*/\"version\": \"$_VERSION\",/" ./package.json
-sed -i "s/ version=\"[.0-9]*\" / version=\"$_VERSION\" /" ./src-cordova/config.xml
+sed -i "s/<em>v[0-9.]*<\/em>/<em>v$_VERSION<\/em>/" ./src/pages/inicio.vue
 git commit -am "$_VERSION"
 git flow release finish
 
