@@ -1,0 +1,19 @@
+#!/bin/sh
+
+set -e
+
+rm -f app.apk
+
+quasar build --clean -m cordova -T android
+
+cp src-cordova/platforms/android/app/build/outputs/apk/release/app-release-unsigned.apk app.apk
+
+jarsigner -sigalg SHA1withRSA \
+  -digestalg SHA1 \
+  -keystore GNovaes.keystore \
+  -storepass $(<~/.keystorepass) \
+  app.apk GNovaesApps
+
+adb install -r app.apk
+adb shell pm clear br.com.gustavonovaes.smrcoletor
+adb shell am start -n br.com.gustavonovaes.smrcoletor/br.com.gustavonovaes.smrcoletor.MainActivity
