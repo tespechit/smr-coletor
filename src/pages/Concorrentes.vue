@@ -1,0 +1,258 @@
+<template>
+  <q-page>
+    <q-layout-header>
+      <q-toolbar color="primary">
+        <q-btn flat
+               round
+               dense
+               icon="navigate_before"
+               @click="$router.push('/pesquisas')" />
+
+        <q-toolbar-title>
+          Concorrentes
+          <span slot="subtitle">{{ pesquisaAtual.nome }}</span>
+        </q-toolbar-title>
+
+        <q-btn flat
+               dense
+               icon="home"
+               label=""
+               @click="$router.push('/')" />
+      </q-toolbar>
+    </q-layout-header>
+
+    <div v-if="concorrentes.length">
+      <q-list separator>
+        <q-item highlight
+                tag="label"
+                v-for="concorrente in concorrentes"
+                :key="concorrente.id">
+          <q-item-side>
+            <q-radio v-model="idConcorrente"
+                     :val="concorrente.id" />
+          </q-item-side>
+
+          <q-item-main class="uppercase"
+                       :label="concorrente.nome">
+            <q-progress class="q-mt-sm"
+                        :percentage="progressoConcorrentes[concorrente.id]" />
+          </q-item-main>
+
+          <q-item-side right
+                       icon="done_all"
+                       color="positive"
+                       v-if="progressoConcorrentes[concorrente.id] >= 100" />
+
+          <q-item-side right
+                       icon="timelapse"
+                       v-else/>
+
+          <q-context-menu class="non-selectable">
+            <q-list-header>Ações</q-list-header>
+
+            <q-list :highlight="false"
+                    link>
+              <q-item v-close-overlay
+                      @click.native="resetarConcorrente(concorrente.id)">
+                <q-item-side icon="undo" />
+                <q-item-main label="Resetar Concorrente"
+                             sublabel="Volta ao primeiro produto." />
+              </q-item>
+
+              <q-item v-close-overlay
+                      @click.native="pularConcorrente(concorrente.id)">
+                <q-item-side icon="fast_forward" />
+                <q-item-main label="Pular Concorrente"
+                             sublabel="Avança até último produto." />
+              </q-item>
+            </q-list>
+          </q-context-menu>
+        </q-item>
+      </q-list>
+
+      <q-page-sticky position="bottom-left"
+                     :offset="[18, 18]">
+        <q-btn round
+               size="lg"
+               :icon="coletasEnviadas ? 'done_all' : 'cloud_upload'"
+               :color="coletasEnviadas ? 'blue-4' : 'blue-8'"
+               label=""
+               v-if="isColetaEncerrada"
+               :loading="enviando"
+               @click="confirmaEnvioColeta" />
+      </q-page-sticky>
+
+      <q-page-sticky position="bottom-right"
+                     :offset="[18, 18]">
+        <q-btn round
+               size="lg"
+               icon="play_arrow"
+               color="positive"
+               label=""
+               :disable="!isConcorrenteSelecionado"
+               @click="iniciaColeta" />
+      </q-page-sticky>
+    </div>
+    <div v-else
+         class="fixed-center full-width text-center">
+      <p>
+        <q-icon name="warning"
+                color="warning"
+                size="64px"></q-icon>
+      </p>
+
+      <p class="q-title upp">Nenhum concorrente disponível</p>
+      <p class="q-subheading">Sincronize o aplicativo através do menu de configurações
+        <q-icon name="settings" /> na tela inicial.</p>
+
+      <p class="q-mt-lg">
+        <q-btn size="lg"
+               label="voltar"
+               @click="$router.push('/')" />
+      </p>
+    </div>
+  </q-page>
+</template>
+
+<script>
+import errorHandler from '../support/errorHandler'
+
+export default {
+  name: 'Concorrentes',
+  data() {
+    return {
+      idConcorrente: null,
+      enviando: false
+    }
+  },
+  computed: {
+    pesquisaAtual() {
+      return this.$store.state.coleta.pesquisaAtual
+    },
+    concorrentes() {
+      return this.$store.getters['global/concorrentes']
+    },
+    isConcorrenteSelecionado() {
+      return this.idConcorrente !== null
+    },
+    progressoConcorrentes() {
+      return this.$store.getters['coleta/progressoConcorrentes']
+    },
+    isColetaEncerrada() {
+      return this.$store.getters['coleta/encerrada']
+    },
+    coletasEnviadas() {
+      return this.$store.state.coleta.coletasEnviadas
+    }
+  },
+  methods: {
+    iniciaColeta() {
+      const concorrente = this.concorrentes.find(
+        concorrente => concorrente.id === this.idConcorrente
+      )
+
+      this.$store.commit('coleta/setConcorrenteAtual', concorrente)
+      this.$router.push('/coleta')
+    },
+    pularConcorrente(idConcorrente) {
+      this.$q
+        .dialog({
+          title: 'Pular Concorrente',
+          message:
+            'Essa operação vai zerar o preço de todos os produtos a partir do último coletado.' +
+            ' Deseja continuar?',
+          ok: {
+            push: true,
+            color: 'negative',
+            label: 'Sim'
+          },
+          cancel: 'Não'
+        })
+        .then(() => {
+          this.$store
+            .commit('coleta/pularConcorrente', idConcorrente)
+            .then(() => {
+              this.$q.notify({
+                type: 'positive',
+                message: 'Concorrente ignorado com sucesso!',
+                timeout: 1000
+              })
+            })
+        })
+        .catch(() => {})
+    },
+    resetarConcorrente(idConcorrente) {
+      this.$q
+        .dialog({
+          title: 'Resetar Concorrente',
+          message:
+            'Essa operação vai voltar a posição do primeiro produto.' +
+            ' Deseja continuar?',
+          ok: {
+            push: true,
+            color: 'negative',
+            label: 'Sim'
+          },
+          cancel: 'Não'
+        })
+        .then(() => {
+          this.$store
+            .commit('coleta/resetarConcorrente', idConcorrente)
+            .then(() => {
+              this.$q.notify({
+                type: 'positive',
+                message: 'Concorrente resetado com sucesso!',
+                timeout: 1000
+              })
+            })
+        })
+        .catch(() => {})
+    },
+    confirmaEnvioColeta() {
+      if (!this.coletasEnviadas) {
+        return this.enviarColeta()
+      }
+
+      this.$q
+        .dialog({
+          title: 'Coleta já enviada',
+          message: 'Essa coleta já foi enviada.' + ' Deseja enviar novamente?',
+          ok: {
+            push: true,
+            label: 'Sim'
+          },
+          cancel: 'Não'
+        })
+        .then(() => {
+          this.enviarColeta()
+        })
+        .catch(() => {})
+    },
+    enviarColeta() {
+      this.enviando = true
+
+      const idLoja = this.$store.state.global.idLoja
+
+      this.$store
+        .dispatch('coleta/enviar', idLoja)
+        .then(res => {
+          this.$q.notify({
+            type: 'positive',
+            message: `Coleta #${res.idColeta} enviada com sucesso!`
+          })
+        })
+        .catch(err => {
+          this.$q.notify({
+            type: 'negative',
+            message: 'Falha ao enviar coleta.'
+          })
+
+          errorHandler('store.dispatch(coleta/enviar)')(err)
+        })
+        .finally(() => {
+          this.enviando = false
+        })
+    }
+  }
+}
+</script>
