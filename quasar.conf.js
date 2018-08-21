@@ -4,7 +4,8 @@ module.exports = function (ctx) {
   return {
     // app plugins (/src/plugins)
     plugins: [
-      'axios'
+      'axios',
+      'awesome-mask'
     ],
     css: [
       'app.styl'
@@ -54,14 +55,25 @@ module.exports = function (ctx) {
         'QListHeader',
         'QItem',
         'QItemMain',
-        'QItemSide'
+        'QItemSide',
+        'QSelect',
+        'QPageSticky',
+        'QChip',
+        'QRadio',
+        'QCheckbox',
+        'QInput',
+        'QProgress',
+        'QContextMenu'
       ],
       directives: [
-        'Ripple'
+        'Ripple',
+        'CloseOverlay',
+        'TouchHold'
       ],
       // Quasar plugins
       plugins: [
-        'Notify'
+        'Notify',
+        'Dialog'
       ]
       // iconSet: ctx.theme.mat ? 'material-icons' : 'ionicons'
       // i18n: 'de' // Quasar language
@@ -112,7 +124,7 @@ module.exports = function (ctx) {
       }
     },
     cordova: {
-      // id: 'org.cordova.quasar.app'
+      id: 'br.com.gustavonovaes.smrcoletor'
     },
     electron: {
       // bundler: 'builder', // or 'packager'
