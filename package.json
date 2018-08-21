@@ -13,7 +13,8 @@
   "dependencies": {
     "awesome-mask": "^1.1.1",
     "axios": "^0.18.0",
-    "localforage": "^1.7.2"
+    "localforage": "^1.7.2",
+    "parse-error": "^0.2.0"
   },
   "devDependencies": {
     "babel-eslint": "^8.2.1",
