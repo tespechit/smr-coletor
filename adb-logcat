@@ -1,0 +1,2 @@
+#!/bin/sh
+adb logcat | grep -F "`adb shell ps | grep br.com.gustavonovaes.smrcoletor | cut -c10-15`"
