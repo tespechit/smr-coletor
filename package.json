@@ -2,7 +2,7 @@
   "name": "coletor",
   "version": "1.1.5",
   "description": "Coletor de Dados",
-  "productName": "SMRColetor",
+  "productName": "SMR Coletor",
   "cordovaId": "br.com.gustavonovaes.smrcoletor",
   "author": "Gustavo Novaes <gustavonovaes93@gmail.com>",
   "private": true,

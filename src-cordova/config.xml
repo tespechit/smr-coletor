@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <widget id="br.com.gustavonovaes.smrcoletor" version="1.1.5" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-    <name>SMRColetor</name>
+    <name>SMR Coletor</name>
     <description>Coletor de Dados</description>
     <author email="dev@cordova.apache.org" href="http://cordova.io">
         Apache Cordova Team
