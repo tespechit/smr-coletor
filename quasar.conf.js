@@ -5,7 +5,8 @@ module.exports = function (ctx) {
     // app plugins (/src/plugins)
     plugins: [
       'axios',
-      'awesome-mask'
+      'awesome-mask',
+      'event-bus'
     ],
     css: [
       'app.styl'

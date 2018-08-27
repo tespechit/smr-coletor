@@ -1,10 +1,12 @@
+const lojas = [
+  { id: '1', descricao: 'L1 - Jaboatão ' },
+  { id: '3', descricao: 'L2 - Cordeiro' },
+  { id: '4', descricao: 'L3 - Piedade' }
+]
+
 export default {
-  idLoja: '1',
-  lojas: [
-    { label: 'L1 - Jaboatão ', value: '1' },
-    { label: 'L2 - Cordeiro', value: '3' },
-    { label: 'L3 - Piedade', value: '4' }
-  ],
+  lojaAtual: lojas[0],
+  lojas,
   pesquisas: [],
   concorrentes: [],
   dataUltimaSincronizacao: null

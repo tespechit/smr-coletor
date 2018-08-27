@@ -7,8 +7,10 @@
 <script>
 export default {
   name: 'App',
-  beforeCreate() {
-    this.$store.dispatch('inicializaStore')
+  mounted() {
+    this.$store.dispatch('inicializaStore').then(() => {
+      this.$bus.$emit('store')
+    })
   }
 }
 </script>

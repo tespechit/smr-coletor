@@ -1,32 +1,25 @@
-import { findColetaAtual } from './helpers/findColetaAtual'
-
-export function emAndamento(state) {
-  return state.pesquisaAtual !== null
+export function isColetaEmAndamento(state) {
+  return state.coletaAtual !== null
 }
 
-export function encerrada(state, getters) {
-  if (!state.coletas.length) {
-    return false
-  }
-
+export function isColetasEncerradas(state) {
   return state.coletas.every(coleta => {
-    return coleta.encerrada
+    return coleta.isEncerrada
   })
-}
-
-export function coletaAtual(state) {
-  return findColetaAtual(state)
-}
-
-export function produtoAtual(state) {
-  const coletaAtual = findColetaAtual(state)
-  return coletaAtual.produtos[coletaAtual.posicao - 1]
 }
 
 export function progressoConcorrentes(state) {
   const progresso = {}
   state.coletas.map(coleta => {
-    const percentual = (coleta.posicao / coleta.totalProdutos) * 100
+    let posicao = coleta.produtos.findIndex(
+      produto => produto.dataHoraColeta === null
+    )
+
+    if (posicao < 0) {
+      posicao = coleta.totalProdutos
+    }
+
+    const percentual = (posicao / coleta.totalProdutos) * 100
     progresso[coleta.concorrente.id] = percentual
   })
   return progresso

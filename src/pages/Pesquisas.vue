@@ -19,7 +19,7 @@
       </q-toolbar>
     </q-layout-header>
 
-    <div v-if="pesquisas"
+    <div v-if="temPesquisas"
          class="q-mb-xl">
       <q-list separator>
         <q-item highlight
@@ -27,7 +27,7 @@
                 v-for="pesquisa in pesquisas"
                 :key="pesquisa.id">
           <q-item-side>
-            <q-radio v-model="idPesquisa"
+            <q-radio v-model="idPesquisaSelecionada"
                      :val="pesquisa.id" />
           </q-item-side>
           <q-item-main class="uppercase"
@@ -45,10 +45,10 @@
         <q-btn round
                size="lg"
                icon="forward"
-               :disable="isPesquisaNaoSelecionada"
+               :disable="!isPesquisaSelecionada"
                color="positive"
                label=""
-               @click="iniciaColeta" />
+               @click="confirmaSelecaoPesquisa" />
       </q-page-sticky>
     </div>
     <div v-else
@@ -76,28 +76,34 @@
 export default {
   name: 'Pesquisas',
   mounted() {
-    const pesquisaSugestao = this.pesquisas.find(pesquisa => pesquisa.sugestao)
-    if (pesquisaSugestao) {
-      this.idPesquisa = pesquisaSugestao.id
-    }
+    this.selecionaPesquisaSugestao()
   },
   computed: {
-    pesquisas() {
-      return this.$store.getters['global/pesquisas']
+    temPesquisas() {
+      return this.pesquisas.length > 0
     },
-    isPesquisaNaoSelecionada() {
-      return this.idPesquisa === null
+    pesquisas() {
+      return this.$store.getters.pesquisas
+    },
+    isPesquisaSelecionada() {
+      return this.idPesquisaSelecionada !== null
     }
   },
   data() {
     return {
-      idPesquisa: null
+      idPesquisaSelecionada: null
     }
   },
   methods: {
-    iniciaColeta() {
+    selecionaPesquisaSugestao() {
+      const pesquisaSugestao = this.pesquisas.find(pesquisa => pesquisa.sugestao)
+      if (pesquisaSugestao) {
+        this.idPesquisaSelecionada = pesquisaSugestao.id
+      }
+    },
+    confirmaSelecaoPesquisa() {
       if (!this.existePesquisaEmAndamento()) {
-        return this.avancar()
+        return this.selecionaPesquisa()
       }
 
       const dialog = {
@@ -130,22 +136,16 @@ export default {
           return this.$q.dialog(dialogConfirmacao)
         })
         .then(() => {
-          this.avancar()
+          this.selecionaPesquisa()
         })
         .catch(() => {})
     },
     existePesquisaEmAndamento() {
       return this.$store.state.coleta.pesquisaAtual
     },
-    avancar() {
-      const pesquisa = this.pesquisas.find(
-        pesquisa => pesquisa.id === this.idPesquisa
-      )
-
-      const concorrentes = this.$store.getters['global/concorrentes']
-
+    selecionaPesquisa() {
       this.$store
-        .dispatch('coleta/iniciar', { pesquisa, concorrentes })
+        .dispatch('coleta/selecionaPesquisa', this.idPesquisaSelecionada)
         .then(() => {
           this.$router.push('/concorrentes')
         })

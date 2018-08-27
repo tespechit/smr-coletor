@@ -1,63 +1,29 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import { debounce } from 'quasar'
-import localforage from 'localforage'
-
-import errorHandler from '../support/errorHandler'
+import * as db from '../services/db'
 
 import coleta from './coleta'
 import global from './global'
 
-const SEGUNDOS_ENTRE_PERSISTENCIA_STATE = 15
-
 Vue.use(Vuex)
 
-localforage.config({
-  driver: localforage.WEBSQL,
-  name: 'SMRColetor',
-  size: 10485760,
-  storeName: 'smrcoletor'
+const Store = new Vuex.Store({
+  state: global.state,
+  getters: global.getters,
+  mutations: global.mutations,
+  actions: global.actions,
+  modules: {
+    coleta
+  }
 })
 
-const persisteState = debounce(function(state) {
-  localforage
-    .setItem('store', state)
-    .catch(errorHandler('localforage.setItem(store)'))
-}, SEGUNDOS_ENTRE_PERSISTENCIA_STATE * 1000)
+const persisteState = debounce(state => {
+  db.persisteState(state)
+}, 3000)
 
-/*
- * If not building with SSR mode, you can
- * directly export the Store instantiation
- */
+Store.subscribe((_, state) => {
+  persisteState(state)
+})
 
-export default function(/* { ssrContext } */) {
-  const Store = new Vuex.Store({
-    actions: {
-      inicializaStore(state) {
-        return localforage
-          .getItem('store')
-          .then(store => {
-            if (store) {
-              this.replaceState(Object.assign(state, store))
-            }
-          })
-          .catch(err => {
-            console.error(err)
-          })
-      },
-      limpaStore() {
-        localforage.clear()
-      }
-    },
-    modules: {
-      coleta,
-      global
-    }
-  })
-
-  Store.subscribe((_, state) => {
-    persisteState(state)
-  })
-
-  return Store
-}
+export default Store

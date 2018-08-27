@@ -1,5 +1,5 @@
-export function setIdLoja(state, idLoja) {
-  state.idLoja = idLoja
+export function setLojaAtual(state, loja) {
+  state.lojaAtual = loja
 }
 
 export function setPesquisas(state, pesquisas) {

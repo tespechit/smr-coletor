@@ -1,8 +1,21 @@
-import { date } from 'quasar'
+import * as db from '../../services/db'
 import api from 'src/services/api'
+import Store from '../index'
 
-export function alteraLoja({ commit, state }, { idLoja }) {
-  commit('setIdLoja', idLoja)
+export function inicializaStore({ rootState }) {
+  return db.recuperaState().then(store => {
+    if (store) {
+      Store.replaceState(Object.assign(rootState, store))
+    }
+  })
+}
+
+export function limpaStore() {
+  db.limpar()
+}
+
+export function alteraLojaAtual({ commit }, loja) {
+  commit('setLojaAtual', loja)
 }
 
 export function sincronizaDadosLoja({ commit, dispatch }) {
@@ -10,21 +23,18 @@ export function sincronizaDadosLoja({ commit, dispatch }) {
     dispatch('getConcorrentes'),
     dispatch('getPesquisas')
   ]).then(() => {
-    commit(
-      'setDataUltimaAtualizacao',
-      date.formatDate(Date.now(), 'DD/MM/YYYY HH:mm:ss')
-    )
+    commit('setDataUltimaAtualizacao', Date.now())
   })
 }
 
 export function getPesquisas({ commit, state }) {
-  return api.getPesquisas(state.idLoja).then(pesquisas => {
+  return api.getPesquisas(state.lojaAtual.id).then(pesquisas => {
     commit('setPesquisas', pesquisas)
   })
 }
 
 export function getConcorrentes({ commit, state }) {
-  return api.getConcorrentes(state.idLoja).then(concorrentes => {
+  return api.getConcorrentes(state.lojaAtual.id).then(concorrentes => {
     commit('setConcorrentes', concorrentes)
   })
 }

@@ -1,8 +1,9 @@
 import axios from 'axios'
 import errorHandler from '../../support/errorHandler'
+import config from '../../common/config'
 
 const server = axios.create({
-  baseURL: 'http://192.168.0.221:8080/api/',
+  baseURL: config.API_URL,
   headers: {
     'X-Requested-With': 'XMLHttpRequest'
   }

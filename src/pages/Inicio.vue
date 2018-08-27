@@ -29,9 +29,9 @@
           <q-item-main>
             <q-select float-label="Loja"
                       radio
-                      :options="lojas"
-                      :value="idLoja"
-                      @input="alteraLoja" />
+                      :options="lojasOptions"
+                      :value="lojaAtual.id"
+                      @input="alteraLojaAtual" />
           </q-item-main>
         </q-item>
         <q-item>
@@ -40,14 +40,16 @@
                    color="positive"
                    class="full-width"
                    label="Sincronizar"
-                   :loading="sincronizando"
+                   :loading="isSincronizando"
                    icon="sync"
                    @click="sincronizar"
                    v-touch-hold.prevent:1000="limpaStore" />
 
             <div class="q-pt-sm">
               <small class="q-body-2 text-grey-8"
-                     v-if="dataUltimaSincronizacao !== null"> Última sincronização feita em: <br> {{ dataUltimaSincronizacao }}</small>
+                     v-if="dataUltimaSincronizacao"> Última sincronização feita em: <br> {{ dataUltimaSincronizadaoFormatada
+                }}
+              </small>
               <small class="q-body-2 text-red-8"
                      v-else>
                 <q-icon name="warning" /> Aplicativo ainda não foi sincronizado.</small>
@@ -72,7 +74,6 @@
 
     <div class="absolute-center text-center"
          style="width: 70vw">
-      <p class="q-caption">Coleta</p>
       <q-btn size="lg"
              rounded
              color="primary"
@@ -85,7 +86,7 @@
              size="lg"
              class="full-width q-mb-lg"
              label="Continuar"
-             :disable="!coletaEmAndamento"
+             v-if="isPesquisaSelecionada"
              icon="forward"
              @click="continuarColeta" />
     </div>
@@ -93,57 +94,95 @@
     <q-page-sticky position="bottom"
                    class="text-center"
                    :offset="[18, 18]">
-      <p class="q-caption">Loja</p>
-      <q-chip class="q-body-1">{{ lojaNome }}</q-chip>
+      <q-chip class="q-body-1">{{ lojaAtual.descricao }}</q-chip>
     </q-page-sticky>
   </q-page>
 </template>
 
 <script>
+import { date } from 'quasar'
 import errorHandler from '../support/errorHandler'
 
 export default {
   name: 'Inicio',
   mounted() {
-    navigator.splashscreen.hide()
+    if (navigator.splashscreen) {
+      navigator.splashscreen.hide()
+    }
+
+    this.$bus.$on('store', () => {
+      if (this.isDesatualizado) {
+        this.$q.notify({
+          type: 'warning',
+          message: 'Coletor desatualizado!',
+          timeout: 0,
+          actions: [ { label: 'Sincronizar', handler: () => this.sincronizar() } ]
+        })
+      }
+    })
   },
   data() {
     return {
       easterEgg: 1,
       drawerOpen: false,
-      sincronizando: false
+      isSincronizando: false
     }
   },
   computed: {
     lojas() {
-      return this.$store.state.global.lojas
+      return this.$store.state.lojas
     },
-    idLoja() {
-      return this.$store.state.global.idLoja
+    lojasOptions() {
+      return this.lojas.map(loja => {
+        return {
+          value: loja.id,
+          label: loja.descricao
+        }
+      })
     },
-    lojaNome() {
-      return this.lojas.find(loja => loja.value === this.idLoja).label
+    lojaAtual() {
+      return this.$store.state.lojaAtual
+    },
+    coletaAtual() {
+      return this.$store.state.coleta.coletaAtual
     },
     dataUltimaSincronizacao() {
-      return this.$store.state.global.dataUltimaSincronizacao
+      return this.$store.state.dataUltimaSincronizacao
     },
-    coletaEmAndamento() {
-      return this.$store.getters['coleta/emAndamento']
+    dataUltimaSincronizadaoFormatada() {
+      return date.formatDate(
+        this.dataUltimaSincronizacao,
+        'DD/MM/YYYY HH:mm:ss'
+      )
+    },
+    isDesatualizado() {
+      if (this.dataUltimaSincronizacao === null) {
+        return true
+      }
+
+      const diff = Date.now() - this.dataUltimaSincronizacao
+      const dias = Math.floor(diff / 86400000)
+
+      return dias > 1
+    },
+    isPesquisaSelecionada() {
+      return this.$store.state.coleta.pesquisaAtual !== null
     }
   },
   methods: {
-    alteraLoja(idLoja) {
-      this.$store.dispatch('global/alteraLoja', { idLoja })
+    alteraLojaAtual(idLoja) {
+      const loja = this.lojas.find(loja => loja.id === idLoja)
+      this.$store.dispatch('alteraLojaAtual', loja)
     },
     sincronizar() {
-      this.sincronizando = true
+      this.isSincronizando = true
       this.$store
-        .dispatch('global/sincronizaDadosLoja')
+        .dispatch('sincronizaDadosLoja')
         .then(() => {
           this.$q.notify({
             type: 'positive',
             message: 'Sincronizado com sucesso!',
-            timeout: 1500
+            timeout: 800
           })
         })
         .catch(err => {
@@ -151,29 +190,26 @@ export default {
             type: 'negative',
             message: 'Falha ao sincronizar dados da loja.'
           })
-          errorHandler('store.dispatch(global/sincronizarDadosLoja)')(err)
+          errorHandler('store.dispatch(sincronizarDadosLoja)')(err)
         })
         .finally(() => {
-          this.sincronizando = false
+          this.isSincronizando = false
         })
     },
     continuarColeta() {
-      if (this.$store.state.coleta.concorrenteAtual === null) {
-        return this.$router.push('/concorrentes')
+      if (this.coletaAtual && !this.coletaAtual.isEncerrada) {
+        return this.$router.push('/coleta')
       }
 
-      if (this.$store.getters['coleta/coletaAtual'].encerrada) {
-        return this.$router.push('/concorrentes')
-      }
-
-      return this.$router.push('/coleta')
+      return this.$router.push('/concorrentes')
     },
-    limpaStore(obj) {
+    limpaStore(_) {
       this.$q.notify({
         type: 'negative',
         message: 'Banco de Dados apagado!',
         timeout: 1500
       })
+
       this.$store.dispatch('limparStore')
     }
   }
