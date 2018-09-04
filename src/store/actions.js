@@ -1,5 +1,44 @@
-import api from '../../services/api'
+import * as db from 'src/services/db'
+import api from 'src/services/api'
+import Store from './index'
 import { parseFileToBase64 } from './helpers/parseFileToBase64'
+
+export function inicializaStore({ state }) {
+  return db.recuperaState().then(store => {
+    if (store) {
+      Store.replaceState({ ...state, ...store })
+    }
+  })
+}
+
+export function limpaStore() {
+  db.limpar()
+}
+
+export function alteraLojaAtual({ commit }, idLoja) {
+  commit('setLojaAtual', idLoja)
+}
+
+export function sincronizaDadosLoja({ commit, dispatch }) {
+  return Promise.all([
+    dispatch('getConcorrentes'),
+    dispatch('getPesquisas')
+  ]).then(() => {
+    commit('setDataUltimaAtualizacao', Date.now())
+  })
+}
+
+export function getPesquisas({ commit, state }) {
+  return api.getPesquisas(state.idLojaAtual).then(pesquisas => {
+    commit('setPesquisas', pesquisas)
+  })
+}
+
+export function getConcorrentes({ commit, state }) {
+  return api.getConcorrentes(state.idLojaAtual).then(concorrentes => {
+    commit('setConcorrentes', concorrentes)
+  })
+}
 
 const parseProdutos = produtos => {
   const produtosClone = JSON.parse(JSON.stringify(produtos))
@@ -14,10 +53,10 @@ const parseProdutos = produtos => {
   })
 }
 
-export function selecionaPesquisa({ commit, rootState }, idPesquisa) {
-  const { concorrentes, pesquisas } = rootState
+export function selecionaPesquisa({ commit, state }, idPesquisa) {
+  const { concorrentes, pesquisas } = state
   const pesquisaAtual = pesquisas.find(pesquisa => pesquisa.id === idPesquisa)
-  commit('setPesquisaAtual', pesquisaAtual)
+  commit('setPesquisaAtual', idPesquisa)
 
   const produtosPesquisa = pesquisaAtual.produtos.sort(
     (a, b) => a.ordem - b.ordem
@@ -36,28 +75,22 @@ export function selecionaPesquisa({ commit, rootState }, idPesquisa) {
   commit('setStatusColetasEnviada', false)
 }
 
-export function selecionaConcorrente(
-  { commit, state, rootState },
-  idConcorrente
-) {
-  const concorrenteAtual = rootState.concorrentes.find(
-    concorrente => concorrente.id === idConcorrente
-  )
-  commit('setConcorrenteAtual', concorrenteAtual)
+export function selecionaConcorrente({ commit, state }, idConcorrente) {
+  commit('setConcorrenteAtual', idConcorrente)
 
-  const coletaAtual = state.coletas.find(coleta => {
-    return coleta.concorrente.id === concorrenteAtual.id
-  })
-  commit('setColetaAtual', coletaAtual)
+  const indexColeta = state.coletas.findIndex(
+    c => c.concorrente.id === idConcorrente
+  )
+  commit('setColetaAtual', indexColeta)
 }
 
-export function encerraColetaAtual({ commit, state }) {
-  commit('encerraColeta', state.coletaAtual)
+export function encerraColetaAtual({ commit, getters }) {
+  commit('encerraColeta', getters.coletaAtual)
 }
 
 export function ignorarConcorrente({ commit, state }, idConcorrente) {
   const coletaConcorrente = state.coletas.find(
-    coleta => coleta.concorrente.id === idConcorrente
+    c => c.concorrente.id === idConcorrente
   )
   const produtosNaoColetados = coletaConcorrente.produtos.filter(
     produto => !produto.dataHoraColeta
@@ -74,12 +107,25 @@ export function ignorarConcorrente({ commit, state }, idConcorrente) {
   commit('encerraColeta', coletaConcorrente)
 }
 
-export async function enviaColeta({ commit, state, rootState }) {
+export function atualizaProdutoAtual({ commit, getters }, novoProduto) {
+  novoProduto.dataHoraColeta = Date.now()
+  commit('atualizaProdutoColeta', {
+    coleta: getters.coletaAtual,
+    produto: { ...novoProduto }
+  })
+}
+
+export async function enviaColeta({ commit, state }) {
   const promisesColetas = state.coletas.map(async coleta => {
     const promisesProdutos = coleta.produtos.map(async produto => {
-      if (produto.foto) {
-        produto.foto = await parseFileToBase64(produto.foto, 'image/jpeg')
+      let foto
+
+      try {
+        foto = await parseFileToBase64(produto.foto, 'image/jpeg')
+      } catch (e) {
+        foto = false
       }
+
       const precoConcorrente = produto.precoConcorrente
         .replace('.', '')
         .replace(',', '.')
@@ -88,7 +134,7 @@ export async function enviaColeta({ commit, state, rootState }) {
         promocao: produto.promocao,
         precoConcorrente,
         dataHoraColeta: produto.dataHoraColeta,
-        foto: produto.foto
+        foto
       }
     })
 
@@ -102,20 +148,12 @@ export async function enviaColeta({ commit, state, rootState }) {
   const coletas = await Promise.all(promisesColetas)
 
   const { idColeta } = await api.enviarColeta(
-    rootState.lojaAtual.id,
-    state.pesquisaAtual.id,
+    state.idLojaAtual,
+    state.idPesquisaAtual,
     coletas
   )
 
   commit('setStatusColetasEnviada', true)
 
   return idColeta
-}
-
-export function atualizaProdutoAtual({ commit, state }, novoProduto) {
-  novoProduto.dataHoraColeta = Date.now()
-  commit('atualizaProdutoColeta', {
-    coleta: state.coletaAtual,
-    produto: { ...novoProduto }
-  })
 }

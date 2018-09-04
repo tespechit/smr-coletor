@@ -102,7 +102,7 @@ export default {
       }
     },
     confirmaSelecaoPesquisa() {
-      if (!this.existePesquisaEmAndamento()) {
+      if (!this.isPesquisaJaSelecionada()) {
         return this.selecionaPesquisa()
       }
 
@@ -140,12 +140,12 @@ export default {
         })
         .catch(() => {})
     },
-    existePesquisaEmAndamento() {
-      return this.$store.state.coleta.pesquisaAtual
+    isPesquisaJaSelecionada() {
+      return this.$store.state.idPesquisaAtual
     },
     selecionaPesquisa() {
       this.$store
-        .dispatch('coleta/selecionaPesquisa', this.idPesquisaSelecionada)
+        .dispatch('selecionaPesquisa', this.idPesquisaSelecionada)
         .then(() => {
           this.$router.push('/concorrentes')
         })

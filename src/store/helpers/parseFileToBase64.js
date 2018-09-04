@@ -9,5 +9,4 @@ export function parseFileToBase64(filePath, mime) {
         Buffer.from(response.data, 'binary').toString('base64')
       )
     })
-    .catch(_ => {})
 }

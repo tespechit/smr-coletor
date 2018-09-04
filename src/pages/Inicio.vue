@@ -115,7 +115,7 @@ export default {
         this.$q.notify({
           type: 'warning',
           message: 'Coletor desatualizado!',
-          timeout: 0,
+          timeout: 10000,
           actions: [ { label: 'Sincronizar', handler: () => this.sincronizar() } ]
         })
       }
@@ -141,10 +141,7 @@ export default {
       })
     },
     lojaAtual() {
-      return this.$store.state.lojaAtual
-    },
-    coletaAtual() {
-      return this.$store.state.coleta.coletaAtual
+      return this.$store.getters.lojaAtual
     },
     dataUltimaSincronizacao() {
       return this.$store.state.dataUltimaSincronizacao
@@ -166,13 +163,12 @@ export default {
       return dias > 1
     },
     isPesquisaSelecionada() {
-      return this.$store.state.coleta.pesquisaAtual !== null
+      return this.$store.getters.isPesquisaSelecionada
     }
   },
   methods: {
     alteraLojaAtual(idLoja) {
-      const loja = this.lojas.find(loja => loja.id === idLoja)
-      this.$store.dispatch('alteraLojaAtual', loja)
+      this.$store.dispatch('alteraLojaAtual', idLoja)
     },
     sincronizar() {
       this.isSincronizando = true
@@ -197,7 +193,7 @@ export default {
         })
     },
     continuarColeta() {
-      if (this.coletaAtual && !this.coletaAtual.isEncerrada) {
+      if (this.$store.getters.coletaAtual) {
         return this.$router.push('/coleta')
       }
 

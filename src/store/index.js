@@ -3,19 +3,18 @@ import Vuex from 'vuex'
 import { debounce } from 'quasar'
 import * as db from '../services/db'
 
-import coleta from './coleta'
-import global from './global'
+import * as actions from './actions'
+import * as mutations from './mutations'
+import * as getters from './getters'
+import state from './state'
 
 Vue.use(Vuex)
 
 const Store = new Vuex.Store({
-  state: global.state,
-  getters: global.getters,
-  mutations: global.mutations,
-  actions: global.actions,
-  modules: {
-    coleta
-  }
+  state,
+  getters,
+  mutations,
+  actions
 })
 
 const persisteState = debounce(state => {

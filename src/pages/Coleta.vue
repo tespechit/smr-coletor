@@ -1,5 +1,5 @@
 <template>
-  <q-page v-if="isColetaEmAndamento">
+  <q-page v-if="coletaAtual">
     <q-layout-header>
       <q-toolbar color="primary">
         <q-btn flat
@@ -104,8 +104,8 @@ import config from '../common/config.js'
 export default {
   name: 'Coleta',
   mounted() {
-    if (!this.isColetaEmAndamento) {
-      return this.$router.push('/')
+    if (!this.coletaAtual) {
+      return this.$router.push('/concorrentes')
     }
 
     this.carregarPrimeiroProdutoNaoColetado()
@@ -125,17 +125,14 @@ export default {
     }
   },
   computed: {
-    isColetaEmAndamento() {
-      return this.$store.getters['coleta/isColetaEmAndamento']
-    },
     pesquisaAtual() {
-      return this.$store.state.coleta.pesquisaAtual
+      return this.$store.getters.pesquisaAtual
     },
     concorrenteAtual() {
-      return this.$store.state.coleta.concorrenteAtual
+      return this.$store.getters.concorrenteAtual
     },
     coletaAtual() {
-      return this.$store.state.coleta.coletaAtual
+      return this.$store.getters.coletaAtual
     },
     isPrecoConcorrenteVazio() {
       return this.produtoForm.precoConcorrente.length === 0
@@ -199,11 +196,12 @@ export default {
       this.produtoForm = { ...produtoAtual }
     },
     focaInputPreco() {
-      this.$refs.preco.focus()
-
+      const inputPreco = this.$refs.preco
+      inputPreco.focus()
       setTimeout(() => {
-        this.$refs.preco.blur()
-        this.$refs.preco.focus()
+        if (inputPreco) {
+          inputPreco.focus()
+        }
       }, 1000)
     },
     voltarPaginaInicial() {
@@ -222,11 +220,11 @@ export default {
       }
 
       if (this.isProdutoAlterado) {
-        this.$store.dispatch('coleta/atualizaProdutoAtual', this.produtoForm)
+        this.$store.dispatch('atualizaProdutoAtual', this.produtoForm)
       }
 
       if (this.isFimDaColeta) {
-        return this.$store.dispatch('coleta/encerraColetaAtual').then(_ => {
+        return this.$store.dispatch('encerraColetaAtual').then(_ => {
           this.voltarPaginaConcorrentes()
         })
       }

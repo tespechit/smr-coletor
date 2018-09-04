@@ -35,13 +35,13 @@
           <q-item-main class="uppercase"
                        :label="concorrente.nome">
             <q-progress class="q-mt-sm"
-                        :percentage="progressoConcorrentes[concorrente.id]" />
+                        :percentage="progressoDoConcorrente(concorrente.id)" />
           </q-item-main>
 
           <q-item-side right
                        icon="done_all"
                        color="positive"
-                       v-if="progressoConcorrentes[concorrente.id] >= 100" />
+                       v-if="progressoDoConcorrente(concorrente.id) >= 100" />
 
           <q-item-side right
                        icon="timelapse"
@@ -70,7 +70,6 @@
                :color="isColetasEnviadas ? 'blue-4' : 'blue-8'"
                label=""
                v-if="isColetasEncerradas"
-               :loading="enviando"
                @click="confirmaEnvioColeta" />
       </q-page-sticky>
 
@@ -116,14 +115,13 @@ export default {
       this.$router.push('/')
     }
 
-    if (this.concorrenteAtual) {
-      this.idConcorrenteSelecionado = this.concorrenteAtual.id
+    if (this.$store.state.idConcorrenteAtual) {
+      this.idConcorrenteSelecionado = this.$store.state.idConcorrenteAtual
     }
   },
   data() {
     return {
-      idConcorrenteSelecionado: null,
-      enviando: false
+      idConcorrenteSelecionado: null
     }
   },
   computed: {
@@ -131,10 +129,7 @@ export default {
       return this.concorrentes.length > 0
     },
     pesquisaAtual() {
-      return this.$store.state.coleta.pesquisaAtual
-    },
-    concorrenteAtual() {
-      return this.$store.state.coleta.concorrenteAtual
+      return this.$store.getters.pesquisaAtual
     },
     concorrentes() {
       return this.$store.getters.concorrentes
@@ -143,23 +138,26 @@ export default {
       return this.idConcorrenteSelecionado !== null
     },
     isColetasEncerradas() {
-      return this.$store.getters['coleta/isColetasEncerradas']
+      return this.$store.getters.isColetasEncerradas
     },
     isColetasEnviadas() {
-      return this.$store.state.coleta.coletasEnviadas
-    },
-    progressoConcorrentes() {
-      return this.$store.getters['coleta/progressoConcorrentes']
+      return this.$store.getters.isColetasEnviadas
     }
   },
   methods: {
     selecionaConcorrente() {
       this.$store
-        .dispatch('coleta/selecionaConcorrente', this.idConcorrenteSelecionado)
+        .dispatch('selecionaConcorrente', this.idConcorrenteSelecionado)
         .then(_ => {
           this.$router.push('/coleta')
         })
         .catch(_ => {})
+    },
+    progressoDoConcorrente(idConcorrente) {
+      const progresso = this.$store.getters.progressoConcorrentes.find(c => c.id === idConcorrente)
+      return progresso < 0
+        ? 0
+        : progresso.percentual
     },
     confirmaEnvioColeta() {
       if (!this.isColetasEnviadas) {
@@ -192,31 +190,38 @@ export default {
         },
         cancel: 'Não'
       }).then(() => {
-        this.$store.dispatch('coleta/ignorarConcorrente', idConcorrente).catch(errorHandler('Falha ao ignorar concorrente'))
+        this.$store.dispatch('ignorarConcorrente', idConcorrente).catch(errorHandler('Falha ao ignorar concorrente'))
       }).catch(() => {})
     },
     enviaColeta() {
-      this.enviando = true
+      this.$q.loading.show({
+        spinnerSize: 250, // in pixels
+        spinnerColor: 'white',
+        customClass: 'bg-primary',
+        message: 'Enviando coleta...'
+      })
 
-      this.$store
-        .dispatch('coleta/enviaColeta')
-        .then(idColeta => {
-          this.$q.notify({
-            type: 'positive',
-            message: `Coleta #${idColeta} enviada com sucesso!`
+      this.$nextTick(() => {
+        this.$store
+          .dispatch('enviaColeta')
+          .then(idColeta => {
+            this.$q.notify({
+              type: 'positive',
+              message: `Coleta #${idColeta} enviada com sucesso!`
+            })
           })
-        })
-        .catch(err => {
-          this.$q.notify({
-            type: 'negative',
-            message: 'Falha ao enviar coleta.'
-          })
+          .catch(err => {
+            this.$q.notify({
+              type: 'negative',
+              message: 'Falha ao enviar coleta.'
+            })
 
-          errorHandler('store.dispatch(coleta/enviaColeta)')(err)
-        })
-        .finally(() => {
-          this.enviando = false
-        })
+            errorHandler('store.dispatch(enviaColeta)')(err)
+          })
+          .finally(() => {
+            this.$q.loading.hide()
+          })
+      })
     }
   }
 }

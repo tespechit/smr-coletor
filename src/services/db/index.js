@@ -2,8 +2,7 @@ import localforage from 'localforage'
 
 localforage.config({
   name: 'SMRColetor',
-  driver: localforage.WEBSQL,
-  size: 1024 * 50,
+  driver: localforage.INDEXEDDB,
   storeName: 'smrcoletor'
 })
 
