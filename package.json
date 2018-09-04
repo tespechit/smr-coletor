@@ -1,6 +1,6 @@
 {
   "name": "coletor",
-  "version": "1.1.5",
+  "version": "1.1.6",
   "description": "Coletor de Dados",
   "productName": "SMR Coletor",
   "cordovaId": "br.com.gustavonovaes.smrcoletor",

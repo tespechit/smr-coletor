@@ -13,7 +13,7 @@
         <q-toolbar-title>
           SMR
           <div slot="subtitle">Aplicativo de Coleta
-            <em>v1.1.5</em>
+            <em>v1.1.6</em>
           </div>
         </q-toolbar-title>
       </q-toolbar>
