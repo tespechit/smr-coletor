@@ -8,7 +8,7 @@ const config = {
   TIRAR_FOTO_MARGEM_LIMITE: 10,
 
   // Qualidade de foto da camera
-  QUALIDADE_FOTO_CAMERA: 80
+  QUALIDADE_FOTO_CAMERA: 30
 }
 
 export default config
